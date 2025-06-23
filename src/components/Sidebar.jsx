@@ -5,6 +5,26 @@ import {
     FaCommentDots, FaCalendarAlt, FaBook, FaCog, FaChartBar, FaRegCalendarAlt, FaUserPlus, FaEllipsisH, FaChevronDown, FaUndo, FaPen
 } from 'react-icons/fa';
 import { TbFlower } from 'react-icons/tb';
+import search from '../assets/vuesax/bulk/search-normal.svg'
+import document from '../assets/vuesax/bulk/vuesax/bulk/document-text.svg'
+import documentfav from '../assets/vuesax/bulk/vuesax/bulk/document-favorite.svg'
+import updates from '../assets/vuesax/bulk/messages-2.svg'
+import Calendar from '../assets/vuesax/bulk/calendar.svg'
+import trend from '../assets/vuesax/bulk/trend-up.svg'
+import template from '../assets/vuesax/bulk/vuesax/bulk/book-square.svg'
+import arrow from '../assets/u_left-arrow-from-left.svg'
+import add from '../assets/add.svg'
+import set from '../assets/change.svg'
+import book from '../assets/book.svg'
+import pen from '../assets/vuesax/linear/edit-2.svg'
+import dot from '../assets/Vector-1.svg'
+import home from '../assets/home-2.svg'
+import user from '../assets/block-1.svg'
+import profile from '../assets/profile-add.svg'
+import eSignature from '../assets/Signature.svg'
+import icon from '../assets/Group.svg'
+import research from '../assets/magic-star.svg'
+import folder from '../assets/vuesax/bulk/folder-cloud.svg'
 
 const SectionHeader = ({ title }) => (
     <div className="font-inter text-[12px] px-2 pt-6 pb-4 w-[36px] h-[12px] leading-[12px] font-medium text-[#91918E] uppercase">
@@ -12,7 +32,7 @@ const SectionHeader = ({ title }) => (
     </div>
 );
 
-const SidebarItem = ({ icon: Icon, imgSrc, label, muted = false, onClick }) => (
+const SidebarItem = ({ icon: Icon, imgSrc, label, muted = false, small = false, onClick }) => (
     <div
         onClick={onClick}
         className={`
@@ -25,16 +45,32 @@ const SidebarItem = ({ icon: Icon, imgSrc, label, muted = false, onClick }) => (
     hover:bg-[rgba(0,0,0,0.03)]
     hover:w-[195px]
     hover:pt-[4px] hover:pr-[8px] hover:pb-[4px] hover:pl-[8px]
+    ${small ? "hover:w-[175px] " : ""}
   `}
     >
 
         {imgSrc ? (
-            <img src={imgSrc} alt="avatar" className="w-5 h-5 rounded-full mr-3 flex-shrink-0" />
+            <img
+                src={imgSrc}
+                alt="avatar"
+                className={`
+      ${muted ? "w-[14.6px] h-[14.6px]" : "w-[18px] h-[18px]"}
+      object-contain
+      mr-3
+      flex-shrink-0
+    `}
+            />
         ) : (
             <Icon className="w-[18px] h-[18px] mr-3 text-[#5F5E5B] flex-shrink-0" />
         )}
 
-        <span className="truncate font-inter font-medium text-[14px] leading-[20px] tracking-[-0.04em]">
+
+        <span
+            className={`
+    truncate font-inter font-medium text-[14px] leading-[20px] tracking-[-0.04em]
+    ${muted ? "text-[#91918E]" : "text-[#5F5E5B]"}
+  `}
+        >
             {label}
         </span>
     </div>
@@ -54,25 +90,39 @@ export default function Sidebar() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     return (
         <aside
-            className={`fixed md:relative z-40 overflow-hidden bg-[#54483114] w-[211px] h-[1501.13px] border-r px-2 pb-2 text-[14px] transition-transform duration-300
+            className={`fixed md:relative z-40  bg-[#54483114] w-[211px] h-[1501.13px] border-r px-2 pb-2 text-[14px] transition-transform duration-300
     ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 flex flex-col`}
         >
             <div>
                 {/* Top Section: Workspace Name */}
-                <div className="flex items-center justify-between h-[32px] px-[6px] py-[8px] w-full">
+                <div className="flex items-center justify-between w-[211px] h-[32px] pt-[8px] pr-[6px] pb-[8px] pl-[6px]">
                     {/* Left: Logo + Title */}
-                    <div className="flex items-center gap-[5px]">
-                        <TbFlower className="text-[#5F5E5B] w-[20px] h-[20px]" />
-                        <span className="text-[14px] font-medium text-[#32302C] leading-5 tracking-[-4%]">Sinan’s Nanis</span>
+                    <div className="flex items-center">
+                        <img
+                            src={icon}
+                            alt="arrow"
+                            className="w-[20px] h-[20px]"
+                        />&nbsp;&nbsp;&nbsp;
+                        <span className="text-[14px] font-medium text-[#32302C] leading-5 tracking-[-0.04em]">
+                            Sinan’s Nanis
+                        </span>&nbsp;
                         <FaChevronDown className="text-gray-400 text-xs ml-1" />
                     </div>
 
                     {/* Right: Undo & Pen */}
-                    <div className="flex gap-2 text-[#5F5E5B] text-sm">
-                        <FaUndo className="cursor-pointer w-[14px] h-[14px]" />
-                        <FaPen className="cursor-pointer w-[14px] h-[14px]" />
-                    </div>
+                    <div className="flex text-[#5F5E5B] text-sm gap-2 mr-2">
+                        <img
+                            src={arrow}
+                            alt="arrow"
+                            className="w-[18px] h-[18px]"
+                        />
+                        <img
+                            src={pen}
+                            alt="arrow"
+                            className="w-[18px] h-[18px]"
+                        />                    </div>
                 </div>
+
 
                 <button
                     className="md:hidden p-2 absolute top-2 left-2 bg-gray-200 rounded z-50"
@@ -81,18 +131,18 @@ export default function Sidebar() {
                     {isSidebarOpen ? "Close" : "Menu"}
                 </button>
                 {/* Navigation */}
-                <div className="space-y-[1px]">
-                    <SidebarItem icon={FaSearch} label="Search" />
-                    <SidebarItem icon={FaHome} label="Home" />
-                    <SidebarItem icon={FaRegBell} label="Updates" />
+                <div className="space-y-[1px] mt-2">
+                    <SidebarItem imgSrc={search} label="Search" />
+                    <SidebarItem imgSrc={home} label="Home" />
+                    <SidebarItem imgSrc={updates} label="Updates" />
                 </div>
 
                 {/* Space */}
                 <SectionHeader title="Space" />
                 <div className="px-1 space-y-[1px]">
-                    <SidebarItem imgSrc="https://i.pravatar.cc/40?img=12" label="Sinan’s HQ" />
+                    <SidebarItem imgSrc={user} label="Sinan’s HQ" />
                     <div className="mt-[6px] ml-[15px] space-y-[1px]">
-                        <SidebarItem icon={FaFolder} label="Teamspace" muted />
+                        <SidebarItem imgSrc={folder} label="Teamspace" small />
                         {showAddNewInput ? (
                             <div className="px-2">
                                 <input
@@ -103,7 +153,7 @@ export default function Sidebar() {
                                 />
                             </div>
                         ) : (
-                            <SidebarItem icon={FaPlus} label="Add new" muted onClick={() => setShowAddNewInput(true)} />
+                            <SidebarItem imgSrc={add} label="Add new" muted small onClick={() => setShowAddNewInput(true)} />
                         )}
                     </div>
                 </div>
@@ -111,46 +161,46 @@ export default function Sidebar() {
                 {/* Services */}
                 <SectionHeader title="Services" />
                 <div className="space-y-[1px]">
-                    <SidebarItem icon={FaStar} label="Legal research" />
-                    <SidebarItem icon={FaFileAlt} label="Create document" />
-                    <SidebarItem icon={FaRegFileAlt} label="Review document" />
+                    <SidebarItem imgSrc={research} label="Legal research" />
+                    <SidebarItem imgSrc={document} label="Create document" />
+                    <SidebarItem imgSrc={documentfav} label="Review document" />
                     {showServicesMore && (
                         <>
                             <SidebarItem icon={FaEdit} label="Contract Builder" muted />
                             <SidebarItem icon={FaEdit} label="Clause Manager" muted />
                         </>
                     )}
-                    <SidebarItem icon={FaEllipsisH} label="More" muted onClick={() => setShowServicesMore(!showServicesMore)} />
+                    <SidebarItem imgSrc={dot} label="More" muted onClick={() => setShowServicesMore(!showServicesMore)} />
                 </div>
 
                 {/* Productivity */}
                 <SectionHeader title="Productivity" />
                 <div className="space-y-[1px]">
-                    <SidebarItem icon={FaEdit} label="eSignature" />
-                    <SidebarItem icon={FaCommentDots} label="Chats" />
-                    <SidebarItem icon={FaCalendarAlt} label="Calendar" />
+                    <SidebarItem imgSrc={eSignature} label="eSignature" />
+                    <SidebarItem imgSrc={updates} label="Chats" />
+                    <SidebarItem imgSrc={Calendar} label="Calendar" />
                     {showProductivityMore && (
                         <>
                             <SidebarItem icon={FaEdit} label="Tasks" muted />
                             <SidebarItem icon={FaEdit} label="Reminders" muted />
                         </>
                     )}
-                    <SidebarItem icon={FaEllipsisH} label="More" muted onClick={() => setShowProductivityMore(!showProductivityMore)} />
+                    <SidebarItem imgSrc={dot} label="More" muted onClick={() => setShowProductivityMore(!showProductivityMore)} />
                 </div>
 
                 {/* LLM */}
                 <SectionHeader title="LLM" />
                 <div className="space-y-[1px]">
-                    <SidebarItem icon={FaBook} label="Knowledge base" />
-                    <SidebarItem icon={FaRegFileAlt} label="Templates" />
+                    <SidebarItem imgSrc={book} label="Knowledge base" />
+                    <SidebarItem imgSrc={template} label="Templates" />
                 </div>
 
                 {/* Settings */}
                 <SectionHeader title="Settings" />
                 <div className="space-y-[1px]">
-                    <SidebarItem icon={FaCog} label="Settings" />
-                    <SidebarItem icon={FaChartBar} label="Usage Insights" />
-                    <SidebarItem icon={FaUserPlus} label="Invite members" />
+                    <SidebarItem imgSrc={set} label="Settings" />
+                    <SidebarItem imgSrc={trend} label="Usage Insights" />
+                    <SidebarItem imgSrc={profile} label="Invite members" />
                 </div>
 
             </div>
