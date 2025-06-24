@@ -86,7 +86,7 @@ export default function Sidebar() {
                             onClick={() => {
 
                                 setShowAccountDropdown(false);
-                                window.location.href = "/login";
+                                window.location.href = "/";
 
                                 // Clear session data
                                 localStorage.clear();

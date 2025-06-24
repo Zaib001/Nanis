@@ -22,7 +22,7 @@ export default function ResetPasswordPage({
     try {
       await resetPassword({token:searchParams.get("token"),newPassword})
       toast.success("Password reset successful");
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       toast.error(error.message || "Reset Password failed");
     }
