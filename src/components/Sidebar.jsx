@@ -57,6 +57,7 @@ export default function Sidebar() {
     const [showServicesMore, setShowServicesMore] = useState(false);
     const [showProductivityMore, setShowProductivityMore] = useState(false);
     const [showArrowIcon, setShowArrowIcon] = useState(false);
+    const [showAccountDropdown, setShowAccountDropdown] = useState(false);
 
     return (
         <aside className="w-[211px] h-auto fixed md:relative z-40 bg-[#F8F8F7] border-r border-[#54483114] px-2 pb-2 flex flex-col text-sm">
@@ -65,12 +66,48 @@ export default function Sidebar() {
                 onMouseEnter={() => setShowArrowIcon(true)}
                 onMouseLeave={() => setShowArrowIcon(false)}
             >
-                <div className="flex items-center gap-2">
+                <div
+                    className="flex items-center gap-2 cursor-pointer relative"
+                    onClick={() => setShowAccountDropdown(!showAccountDropdown)}
+                >
                     <img src={icon} alt="logo" className="w-[20px] h-[20px]" />
-                    <span className="text-[#32302C] font-medium tracking-[-0.04em]">Sinan’s Nanis</span>
-                    <FaChevronDown className="text-gray-400 text-xs" />
+                    <span className="text-[#32302C] font-medium tracking-[-0.04em]">
+                        Sinan’s Nanis
+                    </span>
+                    {showAccountDropdown ? (
+                        <FaChevronUp className="text-gray-400 text-xs" />
+                    ) : (
+                        <FaChevronDown className="text-gray-400 text-xs" />
+                    )}
                 </div>
-                <div className="flex gap-2 text-[#5F5E5B] absolute right-1 top-[7px]">
+                {showAccountDropdown && (
+                    <div className="absolute top-[20px] left-8 bg-white border border-[#E5E5E5] shadow-md rounded-md w-[170px] z-50">
+                        <button
+                            onClick={() => {
+
+                                setShowAccountDropdown(false);
+                                window.location.href = "/login";
+
+                                // Clear session data
+                                localStorage.clear();
+                                sessionStorage.clear();
+
+                                document.cookie.split(";").forEach(cookie => {
+                                    const name = cookie.split("=")[0].trim();
+                                    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;";
+                                });
+
+                            }}
+
+                            className="w-full px-4 py-2 text-sm text-left hover:bg-gray-100 text-[#5F5E5B]"
+                        >
+                            Logout
+                        </button>
+                    </div>
+                )}
+
+
+                <div className="flex gap-2 text-[#5F5E5B] absolute right-1 top-[1px]">
                     {showArrowIcon && (
                         <img src={arrow} alt="undo" className="w-[18px] h-[18px] hover:opacity-80 cursor-pointer" />
                     )}
