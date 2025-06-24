@@ -63,10 +63,10 @@ export default function AuthPage({
           </h2>
 
           {[
-            { Icon: FaApple, service: loginApple },
-            { Icon: FaGoogle, service: loginGoogle },
-            { Icon: FaMicrosoft, service: loginMicrosoft },
-          ].map(({Icon, service}, i) => (
+            { name: "Apple", Icon: FaApple, service: loginApple },
+            { name: "Google", Icon: FaGoogle, service: loginGoogle },
+            { name: "Microsoft",Icon: FaMicrosoft, service: loginMicrosoft },
+          ].map(({Icon, service,name}, i) => (
             <button
               onClick={service} 
               key={i}
@@ -75,7 +75,7 @@ export default function AuthPage({
             >
               <Icon />
               {isSignup ? "Sign up" : "Sign in"} with{" "}
-              {Icon.name.replace("Fa", "")}
+              {name}
             </button>
           ))}
 
