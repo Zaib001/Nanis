@@ -1,211 +1,145 @@
 import { useState } from 'react';
 import {
-    FaSearch, FaHome, FaRegBell, FaUserCircle, FaFolder,
-    FaPlus, FaStar, FaFileAlt, FaRegFileAlt, FaEdit,
-    FaCommentDots, FaCalendarAlt, FaBook, FaCog, FaChartBar, FaRegCalendarAlt, FaUserPlus, FaEllipsisH, FaChevronDown, FaUndo, FaPen
+    FaChevronDown, FaEdit, FaChevronUp
 } from 'react-icons/fa';
-import { TbFlower } from 'react-icons/tb';
-import search from '../assets/vuesax/bulk/search-normal.svg'
-import document from '../assets/vuesax/bulk/vuesax/bulk/document-text.svg'
-import documentfav from '../assets/vuesax/bulk/vuesax/bulk/document-favorite.svg'
-import updates from '../assets/vuesax/bulk/messages-2.svg'
-import Calendar from '../assets/vuesax/bulk/calendar.svg'
-import trend from '../assets/vuesax/bulk/trend-up.svg'
-import template from '../assets/vuesax/bulk/vuesax/bulk/book-square.svg'
-import arrow from '../assets/u_left-arrow-from-left.svg'
-import add from '../assets/add.svg'
-import set from '../assets/change.svg'
-import book from '../assets/book.svg'
-import pen from '../assets/vuesax/linear/edit-2.svg'
-import dot from '../assets/Vector-1.svg'
-import home from '../assets/home-2.svg'
-import user from '../assets/block-1.svg'
-import profile from '../assets/profile-add.svg'
-import eSignature from '../assets/Signature.svg'
-import icon from '../assets/Group.svg'
-import research from '../assets/magic-star.svg'
-import folder from '../assets/vuesax/bulk/folder-cloud.svg'
+import search from '../assets/vuesax/bulk/search-normal.svg';
+import document from '../assets/vuesax/bulk/vuesax/bulk/document-text.svg';
+import documentfav from '../assets/vuesax/bulk/vuesax/bulk/document-favorite.svg';
+import updates from '../assets/vuesax/bulk/messages-2.svg';
+import Calendar from '../assets/vuesax/bulk/calendar.svg';
+import trend from '../assets/vuesax/bulk/trend-up.svg';
+import template from '../assets/vuesax/bulk/vuesax/bulk/book-square.svg';
+import arrow from '../assets/u_left-arrow-from-left.svg';
+import add from '../assets/add.svg';
+import set from '../assets/change.svg';
+import book from '../assets/book.svg';
+import pen from '../assets/vuesax/linear/edit-2.svg';
+import dot from '../assets/Vector-1.svg';
+import home from '../assets/home-2.svg';
+import user from '../assets/block-1.svg';
+import profile from '../assets/profile-add.svg';
+import eSignature from '../assets/Signature.svg';
+import icon from '../assets/Group.svg';
+import research from '../assets/magic-star.svg';
+import folder from '../assets/vuesax/bulk/folder-cloud.svg';
 
 const SectionHeader = ({ title }) => (
-    <div className="font-inter text-[12px] px-2 pt-6 pb-4 w-[36px] h-[12px] leading-[12px] font-medium text-[#91918E] uppercase">
+    <div className="font-inter text-xs w-full h-[30px] px-2 font-medium text-[#91918E] flex items-center">
         {title}
     </div>
 );
 
-const SidebarItem = ({ icon: Icon, imgSrc, label, muted = false, small = false, onClick }) => (
+const SidebarItem = ({ icon: Icon, imgSrc, label, muted = false, onClick }) => (
     <div
         onClick={onClick}
-        className={`
-    flex items-center
-    w-[211px] h-[40px]
-    px-[8px] py-[8px]
-    rounded-[6px]
-    cursor-pointer
-    text-[#5F5E5B]
-    hover:bg-[rgba(0,0,0,0.03)]
-    hover:w-[195px]
-    hover:pt-[4px] hover:pr-[8px] hover:pb-[4px] hover:pl-[8px]
-    ${small ? "hover:w-[175px] " : ""}
-  `}
+        className={`flex  items-center px-2 py-[6px] rounded-[6px] cursor-pointer gap-2 transition-all duration-200
+      hover:bg-[rgba(0,0,0,0.03)] text-sm
+      ${muted ? 'text-[#91918E]' : 'text-[#5F5E5B]'}
+    `}
+        style={{ height: '30px' }}
     >
-
         {imgSrc ? (
             <img
                 src={imgSrc}
-                alt="avatar"
-                className={`
-      ${muted ? "w-[14.6px] h-[14.6px]" : "w-[18px] h-[18px]"}
-      object-contain
-      mr-3
-      flex-shrink-0
-    `}
+                alt="icon"
+                className={`object-contain ${muted ? 'w-[14.6px] h-[14.6px]' : 'w-[18px] h-[18px]'}`}
             />
         ) : (
-            <Icon className="w-[18px] h-[18px] mr-3 text-[#5F5E5B] flex-shrink-0" />
+            <Icon className="w-[18px] h-[18px]" />
         )}
-
-
-        <span
-            className={`
-    truncate font-inter font-medium text-[14px] leading-[20px] tracking-[-0.04em]
-    ${muted ? "text-[#91918E]" : "text-[#5F5E5B]"}
-  `}
-        >
+        <span className="truncate font-inter text-[#5F5E5B] font-medium leading-[20px] tracking-[-0.04em]">
             {label}
         </span>
     </div>
 );
 
-
-
-
-
-
-
-
 export default function Sidebar() {
     const [showServicesMore, setShowServicesMore] = useState(false);
     const [showProductivityMore, setShowProductivityMore] = useState(false);
-    const [showAddNewInput, setShowAddNewInput] = useState(false);
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [showArrowIcon, setShowArrowIcon] = useState(false);
+
     return (
-        <aside
-            className={`fixed md:relative z-40  bg-[#54483114] w-[211px] h-[1501.13px] border-r px-2 pb-2 text-[14px] transition-transform duration-300
-    ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 flex flex-col`}
-        >
-            <div>
-                {/* Top Section: Workspace Name */}
-                <div className="flex items-center justify-between w-[211px] h-[32px] pt-[8px] pr-[6px] pb-[8px] pl-[6px]">
-                    {/* Left: Logo + Title */}
-                    <div className="flex items-center">
-                        <img
-                            src={icon}
-                            alt="arrow"
-                            className="w-[20px] h-[20px]"
-                        />&nbsp;&nbsp;&nbsp;
-                        <span className="text-[14px] font-medium text-[#32302C] leading-5 tracking-[-0.04em]">
-                            Sinan’s Nanis
-                        </span>&nbsp;
-                        <FaChevronDown className="text-gray-400 text-xs ml-1" />
-                    </div>
-
-                    {/* Right: Undo & Pen */}
-                    <div className="flex text-[#5F5E5B] text-sm gap-2 mr-2">
-                        <img
-                            src={arrow}
-                            alt="arrow"
-                            className="w-[18px] h-[18px]"
-                        />
-                        <img
-                            src={pen}
-                            alt="arrow"
-                            className="w-[18px] h-[18px]"
-                        />                    </div>
+        <aside className="w-[211px] h-auto fixed md:relative z-40 bg-[#F8F8F7] border-r border-[#54483114] px-2 pb-2 flex flex-col text-sm">
+            <div
+                className="flex items-center justify-between h-[32px] px-2 mt-2 relative"
+                onMouseEnter={() => setShowArrowIcon(true)}
+                onMouseLeave={() => setShowArrowIcon(false)}
+            >
+                <div className="flex items-center gap-2">
+                    <img src={icon} alt="logo" className="w-[20px] h-[20px]" />
+                    <span className="text-[#32302C] font-medium tracking-[-0.04em]">Sinan’s Nanis</span>
+                    <FaChevronDown className="text-gray-400 text-xs" />
                 </div>
-
-
-                <button
-                    className="md:hidden p-2 absolute top-2 left-2 bg-gray-200 rounded z-50"
-                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                >
-                    {isSidebarOpen ? "Close" : "Menu"}
-                </button>
-                {/* Navigation */}
-                <div className="space-y-[1px] mt-2">
-                    <SidebarItem imgSrc={search} label="Search" />
-                    <SidebarItem imgSrc={home} label="Home" />
-                    <SidebarItem imgSrc={updates} label="Updates" />
-                </div>
-
-                {/* Space */}
-                <SectionHeader title="Space" />
-                <div className="px-1 space-y-[1px]">
-                    <SidebarItem imgSrc={user} label="Sinan’s HQ" />
-                    <div className="mt-[6px] ml-[15px] space-y-[1px]">
-                        <SidebarItem imgSrc={folder} label="Teamspace" small />
-                        {showAddNewInput ? (
-                            <div className="px-2">
-                                <input
-                                    type="text"
-                                    placeholder="New space..."
-                                    className="text-sm px-2 py-1 border rounded w-full outline-none"
-                                    onBlur={() => setShowAddNewInput(false)}
-                                />
-                            </div>
-                        ) : (
-                            <SidebarItem imgSrc={add} label="Add new" muted small onClick={() => setShowAddNewInput(true)} />
-                        )}
-                    </div>
-                </div>
-
-                {/* Services */}
-                <SectionHeader title="Services" />
-                <div className="space-y-[1px]">
-                    <SidebarItem imgSrc={research} label="Legal research" />
-                    <SidebarItem imgSrc={document} label="Create document" />
-                    <SidebarItem imgSrc={documentfav} label="Review document" />
-                    {showServicesMore && (
-                        <>
-                            <SidebarItem icon={FaEdit} label="Contract Builder" muted />
-                            <SidebarItem icon={FaEdit} label="Clause Manager" muted />
-                        </>
+                <div className="flex gap-2 text-[#5F5E5B] absolute right-1 top-[7px]">
+                    {showArrowIcon && (
+                        <img src={arrow} alt="undo" className="w-[18px] h-[18px] hover:opacity-80 cursor-pointer" />
                     )}
-                    <SidebarItem imgSrc={dot} label="More" muted onClick={() => setShowServicesMore(!showServicesMore)} />
+                    <img src={pen} alt="edit" className="w-[18px] h-[18px] hover:opacity-80 cursor-pointer" />
                 </div>
-
-                {/* Productivity */}
-                <SectionHeader title="Productivity" />
-                <div className="space-y-[1px]">
-                    <SidebarItem imgSrc={eSignature} label="eSignature" />
-                    <SidebarItem imgSrc={updates} label="Chats" />
-                    <SidebarItem imgSrc={Calendar} label="Calendar" />
-                    {showProductivityMore && (
-                        <>
-                            <SidebarItem icon={FaEdit} label="Tasks" muted />
-                            <SidebarItem icon={FaEdit} label="Reminders" muted />
-                        </>
-                    )}
-                    <SidebarItem imgSrc={dot} label="More" muted onClick={() => setShowProductivityMore(!showProductivityMore)} />
-                </div>
-
-                {/* LLM */}
-                <SectionHeader title="LLM" />
-                <div className="space-y-[1px]">
-                    <SidebarItem imgSrc={book} label="Knowledge base" />
-                    <SidebarItem imgSrc={template} label="Templates" />
-                </div>
-
-                {/* Settings */}
-                <SectionHeader title="Settings" />
-                <div className="space-y-[1px]">
-                    <SidebarItem imgSrc={set} label="Settings" />
-                    <SidebarItem imgSrc={trend} label="Usage Insights" />
-                    <SidebarItem imgSrc={profile} label="Invite members" />
-                </div>
-
             </div>
 
+            <div className="flex flex-col gap-[1px] mb-[8px] mt-2">
+                <SidebarItem imgSrc={search} label="Search" />
+                <SidebarItem imgSrc={home} label="Home" />
+                <SidebarItem imgSrc={updates} label="Updates" />
+            </div>
 
+            <div className="flex flex-col gap-[1px] mb-[8px]">
+                <SectionHeader title="Space" />
+                <SidebarItem imgSrc={user} label="Sinan’s HQ" />
+                <SidebarItem imgSrc={folder} label="Teamspace" muted />
+            </div>
+
+            <div className="flex flex-col gap-[1px] mb-[8px]">
+                <SectionHeader title="Services" />
+                <SidebarItem imgSrc={research} label="Legal research" />
+                <SidebarItem imgSrc={document} label="Create document" />
+                <SidebarItem imgSrc={documentfav} label="Review document" />
+                {showServicesMore && (
+                    <>
+                        <SidebarItem icon={FaEdit} label="Contract Builder" muted />
+                        <SidebarItem icon={FaEdit} label="Clause Manager" muted />
+                    </>
+                )}
+                <SidebarItem
+                    imgSrc={dot}
+                    label={showServicesMore ? 'Less' : 'More'}
+                    muted
+                    onClick={() => setShowServicesMore(!showServicesMore)}
+                />
+            </div>
+
+            <div className="flex flex-col gap-[1px] mb-[8px]">
+                <SectionHeader title="Productivity" />
+                <SidebarItem imgSrc={eSignature} label="eSignature" />
+                <SidebarItem imgSrc={updates} label="Chats" />
+                <SidebarItem imgSrc={Calendar} label="Calendar" />
+                {showProductivityMore && (
+                    <>
+                        <SidebarItem icon={FaEdit} label="Tasks" muted />
+                        <SidebarItem icon={FaEdit} label="Reminders" muted />
+                    </>
+                )}
+                <SidebarItem
+                    imgSrc={dot}
+                    label={showProductivityMore ? 'Less' : 'More'}
+                    muted
+                    onClick={() => setShowProductivityMore(!showProductivityMore)}
+                />
+            </div>
+
+            <div className="flex flex-col gap-[1px] mb-[8px]">
+                <SectionHeader title="LLM" />
+                <SidebarItem imgSrc={book} label="Knowledge base" />
+                <SidebarItem imgSrc={template} label="Templates" />
+            </div>
+
+            <div className="flex flex-col gap-[1px] mb-[8px]">
+                <SectionHeader title="Settings" />
+                <SidebarItem imgSrc={set} label="Settings" />
+                <SidebarItem imgSrc={trend} label="Usage Insights" />
+                <SidebarItem imgSrc={profile} label="Invite members" />
+            </div>
         </aside>
     );
 }
