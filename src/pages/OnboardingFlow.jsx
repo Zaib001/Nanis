@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { updateUserProfile } from '../services/api';
 
 export default function OnboardingFlow() {
   const [step, setStep] = useState(1);
@@ -27,9 +29,14 @@ export default function OnboardingFlow() {
     );
   };
 
-  const handleSubmit = () => {
     console.log({ fullName, selectedCategories });
+  const handleSubmit = async () => {
+    try{
+    await updateUserProfile({name:fullName,preference:selectedCategories.join(",")})
     navigate('/dashboard'); // or wherever needed
+}catch(error){
+    toast.error(error.message || "Could not enter data")
+}
   };
 
   return (

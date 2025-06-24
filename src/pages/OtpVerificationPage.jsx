@@ -1,20 +1,35 @@
-import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { FaArrowCircleUp } from 'react-icons/fa';
-import toast from 'react-hot-toast';
+import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { FaArrowCircleUp } from "react-icons/fa";
+import toast from "react-hot-toast";
+import { resendOtp, verifySignupOtp } from "../services/api";
 
 export default function OtpVerificationPage({
-  message = 'Ask Lovable to build internal tools.',
+  message = "Ask Lovable to build internal tools.",
 }) {
-  const [otp, setOtp] = useState('');
+  const [otp, setOtp] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
-  const email = location.state?.email || 'user@email.com';
+  const email = location.state?.email || "user@email.com";
 
-  const handleVerify = () => {
-    if (!otp) return toast.error('Enter the OTP');
-    toast.success('OTP verified');
-    navigate('/onboarding');
+  const handleVerify = async () => {
+    if (!otp) return toast.error("Enter the OTP");
+    try {
+      await verifySignupOtp({ email, otp });
+      toast.success("OTP verified");
+      navigate("/onboarding");
+    } catch (error) {
+      toast.error(error.message || "OTP verification failed");
+    }
+  };
+
+  const resendOTP = async () => {
+    try {
+      await resendOtp({ email });
+      toast.success("A new code has been sent");
+    } catch (error) {
+      toast.error(error.message || "Failed to send new code");
+    }
   };
 
   return (
@@ -41,10 +56,10 @@ export default function OtpVerificationPage({
             Continue
           </button>
           <p className="text-xs text-[#6C6C6C]">
-            The code expires after 15 minutes.{' '}
+            The code expires after 15 minutes.{" "}
             <button
               className="underline font-medium"
-              onClick={() => toast.success('A new code has been sent')}
+              onClick={resendOTP}
             >
               Get a new code
             </button>
@@ -55,7 +70,7 @@ export default function OtpVerificationPage({
       {/* Right - Gradient box */}
       <div
         className="w-1/2 h-[98%] mt-2 mr-[10px] pr-6 flex items-center justify-center rounded-[12px]"
-        style={{ background: 'linear-gradient(to bottom, #888870, #888870)' }}
+        style={{ background: "linear-gradient(to bottom, #888870, #888870)" }}
       >
         <div className="bg-white shadow-md flex items-center justify-between px-4 py-[10px] rounded-full w-[320px] h-[44px]">
           <input

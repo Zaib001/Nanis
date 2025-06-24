@@ -1,23 +1,31 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaArrowCircleUp } from 'react-icons/fa';
-import toast from 'react-hot-toast';
+import React, { useState } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { FaArrowCircleUp } from "react-icons/fa";
+import toast from "react-hot-toast";
+import { resetPassword } from "../services/api";
 
-export default function ResetPasswordPage({ message = 'Ask Lovable to build your landing page' }) {
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+export default function ResetPasswordPage({
+  message = "Ask Lovable to build your landing page",
+}) {
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
+  const[searchParams,setSearchParams] = useSearchParams();
 
-  const handleResetPassword = () => {
+  const handleResetPassword = async () => {
     if (!newPassword || !confirmPassword) {
-      return toast.error('Fill all fields');
+      return toast.error("Fill all fields");
     }
     if (newPassword !== confirmPassword) {
-      return toast.error('Passwords do not match');
+      return toast.error("Passwords do not match");
     }
-
-    toast.success('Password reset successful');
-    navigate('/login');
+    try {
+      await resetPassword({token:searchParams.get("token"),newPassword})
+      toast.success("Password reset successful");
+      navigate("/login");
+    } catch (error) {
+      toast.error(error.message || "Reset Password failed");
+    }
   };
 
   return (
@@ -52,7 +60,9 @@ export default function ResetPasswordPage({ message = 'Ask Lovable to build your
       {/* Right Side - Gradient Background */}
       <div
         className="w-1/2 h-[98%] mt-2 mr-[10px] pr-6 flex items-center justify-center rounded-[12px]"
-        style={{ background: 'linear-gradient(to bottom right, #888870, #666655)' }}
+        style={{
+          background: "linear-gradient(to bottom right, #888870, #666655)",
+        }}
       >
         <div className="bg-white shadow-md flex items-center justify-between px-4 py-[10px] rounded-lg w-[320px] h-[44px]">
           <input
