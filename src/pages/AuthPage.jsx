@@ -1,46 +1,53 @@
 import React, { useState } from 'react';
 import { FaApple, FaGoogle, FaMicrosoft, FaArrowCircleUp, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import toast from 'react-hot-toast';
-import { loginUser, registerUser } from '../services/api';
-import { useNavigate } from 'react-router-dom';
+import toast from "react-hot-toast";
+import {
+    loginApple,
+    loginGoogle,
+    loginMicrosoft,
+    loginUser,
+    registerUser,
+} from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 export default function AuthPage({
-    mode = 'login',
-    message = 'Ask Lovable to build your saas star',
+    mode = "login",
+    message = "Ask Lovable to build your saas star",
 }) {
-    const isSignup = mode === 'signup';
+    const isSignup = mode === "signup";
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [agreed, setAgreed] = useState(false);
+
     const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [agreed, setAgreed] = useState(false);
 
     const navigate = useNavigate();
     const handleSubmit = async () => {
         if (isSignup && !agreed) {
-            toast.error('Please agree to the Terms and Privacy Policy');
+            toast.error("Please agree to the Terms and Privacy Policy");
             return;
         }
 
         const payload = { email, password };
-        const toastId = toast.loading(isSignup ? 'Signing up...' : 'Signing in...');
+        const toastId = toast.loading(isSignup ? "Signing up..." : "Signing in...");
 
         try {
             const response = isSignup
                 ? await registerUser(payload)
                 : await loginUser(payload);
 
-            toast.success('Success!', { id: toastId });
-            console.log('Auth Success:', response);
+            toast.success("Success!", { id: toastId });
+            console.log("Auth Success:", response);
 
             if (isSignup) {
-                navigate('/verify-otp', { state: { email } });
+                navigate("/verify-otp", { state: { email } });
             } else {
-                // navigate('/dashboard');
+                navigate("/dashboard");
             }
         } catch (error) {
-            toast.error(error.message || 'Authentication failed', { id: toastId });
+            toast.error(error.message || "Authentication failed", { id: toastId });
         }
     };
 
@@ -49,17 +56,22 @@ export default function AuthPage({
             <div className="w-1/2 flex flex-col justify-center items-center px-6">
                 <div className="w-[320px] space-y-3">
                     <h2 className="text-2xl font-semibold mb-4">
-                        {isSignup ? 'Create your account' : 'Sign in'}
+                        {isSignup ? "Create your account" : "Sign in"}
                     </h2>
-
-                    {[FaApple, FaGoogle, FaMicrosoft].map((Icon, i) => (
+                    {[
+                        { name: "Apple", Icon: FaApple, service: loginApple },
+                        { name: "Google", Icon: FaGoogle, service: loginGoogle },
+                        { name: "Microsoft", Icon: FaMicrosoft, service: loginMicrosoft },
+                    ].map(({ Icon, service, name }, i) => (
                         <button
+                            onClick={service}
                             key={i}
                             type="button"
                             className="w-full flex items-center justify-center gap-2 bg-white border border-[#EBEAE7] rounded-md h-[34px] font-medium text-sm"
                         >
                             <Icon />
-                            {isSignup ? 'Sign up' : 'Sign in'} with {Icon.name.replace('Fa', '')}
+                            {isSignup ? "Sign up" : "Sign in"} with{" "}
+                            {name}
                         </button>
                     ))}
 
@@ -71,7 +83,9 @@ export default function AuthPage({
 
                     {/* Email Field */}
                     <div className="space-y-2">
-                        <label htmlFor="email" className="text-sm font-medium">Email</label>
+                        <label htmlFor="email" className="text-sm font-medium">
+                            Email
+                        </label>
                         <input
                             id="email"
                             type="email"
@@ -84,59 +98,29 @@ export default function AuthPage({
 
                     {/* Password Field */}
                     <div className="space-y-2">
-                        <label htmlFor="password" className="text-sm font-medium flex justify-between">
+                        <label
+                            htmlFor="password"
+                            className="text-sm font-medium flex justify-between"
+                        >
                             Password
                             {!isSignup && (
-                                <Link to="/forgot-password" className="text-xs text-[#6C6C6C] underline">
+                                <Link
+                                    to="/forgot-password"
+                                    className="text-xs text-[#6C6C6C] underline"
+                                >
                                     Forgot password?
                                 </Link>
                             )}
                         </label>
-
-                        <div className="relative">
-                            <input
-                                id="password"
-                                type={showPassword ? 'text' : 'password'}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Password"
-                                className="w-full h-[44px] px-[14px] py-[10px] border border-[#EBEAE7] rounded-md text-sm font-medium focus:outline-none pr-10"
-                            />
-                            <div
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-[#6C6C6C]"
-                            >
-                                {showPassword ? <FaEyeSlash /> : <FaEye />}
-                            </div>
-                        </div>
+                        <input
+                            id="password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Password"
+                            className="w-full h-[44px] px-[14px] py-[10px] border border-[#EBEAE7] rounded-md text-sm font-medium focus:outline-none"
+                        />
                     </div>
-
-                    {/* Terms Checkbox */}
-                    {isSignup && (
-                        <label className="flex items-start gap-2 text-xs text-[#37352F] cursor-pointer">
-                            <input
-                                type="checkbox"
-                                checked={agreed}
-                                onChange={(e) => setAgreed(e.target.checked)}
-                                className="sr-only peer"
-                            />
-                            <div className="w-[14px] h-[14px] border border-[#ADADAD] rounded-sm flex items-center justify-center peer-checked:bg-[#37352F] peer-checked:border-[#37352F]">
-                                <svg
-                                    className="hidden peer-checked:block w-[8px] h-[8px]"
-                                    viewBox="0 0 12 10"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path d="M1 5L4.5 8.5L11 1" stroke="white" strokeWidth="2" />
-                                </svg>
-                            </div>
-                            <span>
-                                Agree to our <a href="#" className="underline">Terms of Service</a> and{' '}
-                                <a href="#" className="underline">Privacy Policy</a>
-                            </span>
-                        </label>
-                    )}
-
                     {/* Submit Button */}
                     <button
                         onClick={handleSubmit}
@@ -158,8 +142,15 @@ export default function AuthPage({
                 </div>
             </div>
 
+
+
+
             {/* Right - Gradient Message Box */}
-            <div className="w-1/2 h-[98%] mt-2 mr-[10px] pr-6 flex items-center justify-center rounded-[12px]" style={{ backgroundColor: '#888870' }}>
+            < div
+                className="w-1/2 h-[98%] mt-2 mr-[10px] pr-6 flex items-center justify-center rounded-[12px]"
+                style={{ backgroundColor: "#888870" }
+                }
+            >
                 <div className="bg-white shadow-md flex items-center justify-between px-4 py-[10px] rounded-lg w-[320px] h-[44px]">
                     <input
                         type="text"
