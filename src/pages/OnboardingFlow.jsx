@@ -31,6 +31,8 @@ export default function OnboardingFlow() {
     }
   ];
 
+  console.log({selectedUseCase})
+
   const handleSubmit = async () => {
     try {
       await updateUserProfile({ name: fullName, preference: selectedUseCase });
