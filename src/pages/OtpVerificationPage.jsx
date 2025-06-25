@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { resendOtp, verifySignupOtp } from "../services/api";
 
 export default function OtpVerificationPage({
-  message = "Ask Lovable to build internal tools.",
+  message = "Ask Nanis to build internal tools.",
 }) {
   const [otp, setOtp] = useState("");
   const navigate = useNavigate();
@@ -40,13 +40,19 @@ export default function OtpVerificationPage({
           <div className="text-3xl font-bold">Nanis</div>
           <h2 className="text-xl font-semibold">Enter your login code</h2>
           <p className="text-sm text-[#6C6C6C]">
-            We just sent a code to <span className="font-medium">{email}</span>
+            We just sent a code to <span className="font-medium">{email}</span>{' '}
+            <button
+              onClick={() => navigate('/login')}
+              className="underline font-medium text-[#37352F] ml-2 text-xs"
+            >
+              Edit
+            </button>
           </p>
           <input
             type="text"
             value={otp}
             onChange={(e) => setOtp(e.target.value.toUpperCase())}
-            placeholder="TBQCCG"
+            placeholder="4321"
             className="w-full h-[40px] text-center tracking-widest uppercase px-4 border border-[#EBEAE7] rounded-md focus:outline-none text-lg font-medium"
           />
           <button

@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { requestPasswordReset } from "../services/api";
 
 export default function ForgotPasswordPage({
-  message = "Ask Lovable to build your landing page",
+  message = "Ask Nanis to build your landing page",
 }) {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
@@ -46,7 +46,7 @@ export default function ForgotPasswordPage({
               </div>
               <button
                 onClick={handleSendReset}
-                className="w-full bg-black text-white rounded-md h-[34px] text-sm font-medium"
+                className="w-full bg-black text-white rounded-md h-[44px] text-sm font-medium"
               >
                 Send reset link
               </button>
