@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { resetPassword } from "../services/api";
 
 export default function ResetPasswordPage({
-  message = "Ask Lovable to build your landing page",
+  message = "Ask Nanis to build your landing page",
 }) {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");

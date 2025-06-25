@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { resendOtp, verifySignupOtp } from "../services/api";
 
 export default function OtpVerificationPage({
-  message = "Ask Lovable to build internal tools.",
+  message = "Ask Nanis to build internal tools.",
 }) {
   const [otp, setOtp] = useState("");
   const navigate = useNavigate();

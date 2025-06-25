@@ -33,7 +33,7 @@ const App = () => {
         {/* Auth Routes */}
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<AuthPage mode="login" />} />
-        <Route path="/signup" element={<AuthPage mode="signup" message="Ask Lovable to build internal tools." />} />
+        <Route path="/signup" element={<AuthPage mode="signup" message="Ask Nanis to build internal tools." />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
 

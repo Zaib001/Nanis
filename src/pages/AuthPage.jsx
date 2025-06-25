@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function AuthPage({
     mode = "login",
-    message = "Ask Lovable to build your saas star",
+    message = "Ask Nanis to build your saas star",
 }) {
     const isSignup = mode === "signup";
 
