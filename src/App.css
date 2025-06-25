@@ -4,6 +4,14 @@
   padding: 2rem;
   text-align: center;
 }
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
 
 .logo {
   height: 6em;

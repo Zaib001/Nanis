@@ -23,6 +23,8 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import OtpVerificationPage from './pages/OtpVerificationPage';
 import OnboardingFlow from './pages/OnboardingFlow';
+import './index.css';
+
 
 const App = () => {
   return (

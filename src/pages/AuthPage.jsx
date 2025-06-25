@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaApple, FaGoogle, FaMicrosoft, FaArrowCircleUp } from 'react-icons/fa';
+import { FaApple, FaGoogle, FaMicrosoft, FaArrowCircleUp, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { loginUser, registerUser } from '../services/api';
@@ -14,7 +14,7 @@ export default function AuthPage({
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [agreed, setAgreed] = useState(false);
-
+    const [showPassword, setShowPassword] = useState(false);
 
     const navigate = useNavigate();
     const handleSubmit = async () => {
@@ -46,7 +46,7 @@ export default function AuthPage({
 
     return (
         <div className="flex h-screen w-full font-inter text-[#37352F] bg-[#F8F8F7]">
-                <div className="w-1/2 flex flex-col justify-center items-center px-6">
+            <div className="w-1/2 flex flex-col justify-center items-center px-6">
                 <div className="w-[320px] space-y-3">
                     <h2 className="text-2xl font-semibold mb-4">
                         {isSignup ? 'Create your account' : 'Sign in'}
@@ -92,14 +92,23 @@ export default function AuthPage({
                                 </Link>
                             )}
                         </label>
-                        <input
-                            id="password"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Password"
-                            className="w-full h-[44px] px-[14px] py-[10px] border border-[#EBEAE7] rounded-md text-sm font-medium focus:outline-none"
-                        />
+
+                        <div className="relative">
+                            <input
+                                id="password"
+                                type={showPassword ? 'text' : 'password'}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Password"
+                                className="w-full h-[44px] px-[14px] py-[10px] border border-[#EBEAE7] rounded-md text-sm font-medium focus:outline-none pr-10"
+                            />
+                            <div
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-[#6C6C6C]"
+                            >
+                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                            </div>
+                        </div>
                     </div>
 
                     {/* Terms Checkbox */}
@@ -131,7 +140,7 @@ export default function AuthPage({
                     {/* Submit Button */}
                     <button
                         onClick={handleSubmit}
-                        className="w-full flex items-center justify-center gap-2 bg-black text-white border border-[#EBEAE7] rounded-md h-[34px] font-bold text-sm"
+                        className="w-full flex items-center justify-center gap-2 bg-black text-white border border-[#EBEAE7] rounded-md h-[44px] font-bold text-sm"
                     >
                         {isSignup ? 'Sign up' : 'Sign in'}
                     </button>
