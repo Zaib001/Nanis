@@ -25,7 +25,7 @@ import research from '../assets/magic-star.svg';
 import folder from '../assets/vuesax/bulk/folder-cloud.svg';
 
 const SectionHeader = ({ title }) => (
-    <div className="font-inter text-xs w-full h-[30px] px-2 font-medium text-[#91918E] flex items-center">
+    <div className="font-inter text-xs w-full h-[30px] px-2 font-normal text-[#91918E] flex items-center">
         {title}
     </div>
 );
@@ -48,7 +48,7 @@ const SidebarItem = ({ icon: Icon, imgSrc, label, muted = false, onClick }) => (
         ) : (
             <Icon className="w-[18px] h-[18px]" />
         )}
-        <span className="truncate font-inter text-[#5F5E5B] font-medium leading-[20px] tracking-[-0.04em]">
+        <span className="truncate font-inter text-[#5F5E5B] font-normal leading-[20px] tracking-[-0.04em]">
             {label}
         </span>
     </div>
@@ -88,7 +88,7 @@ export default function Sidebar() {
                         onClick={() => setShowAccountDropdown(!showAccountDropdown)}
                     >
                         <img src={icon} alt="logo" className="w-[20px] h-[20px]" />
-                        <span className="text-[#32302C] font-medium tracking-[-0.04em]">
+                        <span className="text-[#32302C] font-normal tracking-[-0.04em]">
                             Sinan’s Nanis
                         </span>
                         {showAccountDropdown ? (
