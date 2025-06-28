@@ -22,10 +22,18 @@ import profile from '../assets/profile-add.svg';
 import eSignature from '../assets/Signature.svg';
 import icon from '../assets/Group.svg';
 import research from '../assets/magic-star.svg';
+import review from '../assets/document-favorite.svg';
+import eyee from '../assets/eyee.svg';
+import chat from '../assets/message-text.svg';
+import sms from '../assets/sms.svg';
+import translate from '../assets/translate.svg';
+import calendar from '../assets/calendar.svg';
+import copy from '../assets/document-copy.svg';
+import task from '../assets/Frame 2043684104.svg';
 import folder from '../assets/vuesax/bulk/folder-cloud.svg';
 
 const SectionHeader = ({ title }) => (
-    <div className="font-inter text-xs w-full h-[30px] px-2 font-medium text-[#91918E] flex items-center">
+    <div className="font-inter text-xs w-full h-[30px] px-2 font-normal text-[#91918E] flex items-center">
         {title}
     </div>
 );
@@ -48,7 +56,7 @@ const SidebarItem = ({ icon: Icon, imgSrc, label, muted = false, onClick }) => (
         ) : (
             <Icon className="w-[18px] h-[18px]" />
         )}
-        <span className="truncate font-inter text-[#5F5E5B] font-medium leading-[20px] tracking-[-0.04em]">
+        <span className="truncate font-inter text-[#5F5E5B] font-normal leading-[20px] tracking-[-0.04em]">
             {label}
         </span>
     </div>
@@ -88,7 +96,7 @@ export default function Sidebar() {
                         onClick={() => setShowAccountDropdown(!showAccountDropdown)}
                     >
                         <img src={icon} alt="logo" className="w-[20px] h-[20px]" />
-                        <span className="text-[#32302C] font-medium tracking-[-0.04em]">
+                        <span className="text-[#32302C] font-normal tracking-[-0.04em]">
                             Sinan’s Nanis
                         </span>
                         {showAccountDropdown ? (
@@ -152,7 +160,8 @@ export default function Sidebar() {
                     <SectionHeader title="Services" />
                     <SidebarItem imgSrc={research} label="Legal research" />
                     <SidebarItem imgSrc={document} label="Create document" />
-                    <SidebarItem imgSrc={documentfav} label="Review document" />
+                    <SidebarItem imgSrc={review} label="Review document" />
+
 
                     <AnimatePresence initial={false}>
                         {showServicesMore && (
@@ -162,16 +171,18 @@ export default function Sidebar() {
                                 exit={{ height: 0, opacity: 0 }}
                                 transition={{ duration: 0.3, ease: 'easeInOut' }}
                             >
-                                <SidebarItem icon={FaFileContract} label="Contract Builder" muted />
-                                <SidebarItem icon={FaParagraph} label="Clause Manager" muted />
+                                <SidebarItem imgSrc={chat} label="Chat with document" />
+                                <SidebarItem imgSrc={copy} label="Compare document" />
+                                <SidebarItem imgSrc={translate} label="Legal translate" />
+                                <SidebarItem imgSrc={sms} label="Memo & mail" />
+                                <SidebarItem imgSrc={eyee} label="Case guide" />
                             </motion.div>
                         )}
                     </AnimatePresence>
 
 
                     <SidebarItem
-                        imgSrc={!showServicesMore ? dot : undefined}
-                        icon={showServicesMore ? FaChevronUp : undefined}
+                        imgSrc={!showServicesMore ? dot : dot}
                         label={showServicesMore ? 'Less' : 'More'}
                         muted
                         onClick={() => setShowServicesMore(!showServicesMore)}
@@ -183,7 +194,7 @@ export default function Sidebar() {
                     <SectionHeader title="Productivity" />
                     <SidebarItem imgSrc={eSignature} label="eSignature" />
                     <SidebarItem imgSrc={updates} label="Chats" />
-                    <SidebarItem imgSrc={Calendar} label="Calendar" />
+
 
                     <AnimatePresence initial={false}>
                         {showProductivityMore && (
@@ -193,15 +204,15 @@ export default function Sidebar() {
                                 exit={{ height: 0, opacity: 0 }}
                                 transition={{ duration: 0.3, ease: 'easeInOut' }}
                             >
-                                <SidebarItem icon={FaTasks} label="Tasks" muted />
-                                <SidebarItem icon={FaBell} label="Reminders" muted />
+                                <SidebarItem imgSrc={calendar} label="Calendar" />
+                                <SidebarItem imgSrc={task} label="Tasks" />
+                                <SidebarItem imgSrc={book} label="Legal news" />
                             </motion.div>
                         )}
                     </AnimatePresence>
 
                     <SidebarItem
-                        imgSrc={!showProductivityMore ? dot : undefined}
-                        icon={showProductivityMore ? FaChevronUp : undefined}
+                        imgSrc={!showProductivityMore ? dot : dot}
                         label={showProductivityMore ? 'Less' : 'More'}
                         muted
                         onClick={() => setShowProductivityMore(!showProductivityMore)}

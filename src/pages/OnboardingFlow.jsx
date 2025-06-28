@@ -3,37 +3,57 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { updateUserProfile } from '../services/api';
 import { FaCheckCircle } from 'react-icons/fa';
+import Header from '../components/Header';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import school from '../assets/teacher.svg'
+import personal from '../assets/profile.svg'
+import team from '../assets/buildings-2.svg'
+import placeholder from '../assets/placeholder.svg';
 
 export default function OnboardingFlow() {
   const [step, setStep] = useState(1);
   const [fullName, setFullName] = useState('');
   const [selectedUseCase, setSelectedUseCase] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [profilePic, setProfilePic] = useState(null);
+
+
   const navigate = useNavigate();
+
 
   const useCases = [
     {
       title: 'For my team',
-      description: 'Collaborate on your docs, projects, and wikis.',
+      description: 'Used by teams managing legal, HR, or operational documents collaboratively.',
       value: 'team',
-      image: 'https://img.freepik.com/premium-vector/business-team-discussing-project-black-white-doodle-art-vector-flat-illustration_831490-5584.jpg'
+      icon: team
     },
     {
       title: 'For personal use',
-      description: 'Write better. Think more clearly. Stay organized.',
+      description: 'Used by individuals handling personal, freelance, or one-off legal documents.',
       value: 'personal',
-      image: 'https://png.pngtree.com/png-clipart/20230929/original/pngtree-vector-spot-illustration-of-a-black-and-white-concept-for-a-png-image_12911159.png'
+      icon: personal
     },
     {
       title: 'For school',
-      description: 'Keep your notes, research, and tasks all in one place.',
+      description: 'For students or educators managing research, assignments, and documents.',
       value: 'school',
-      image: 'https://media.istockphoto.com/id/1354365074/vector/black-and-white-vector-illustration-of-a-childrens-activity-coloring-book-page-with-a.jpg?s=612x612&w=0&k=20&c=WkN61UTGcjeRiToEW3RDFMpGYyJeZltukeLJEB75B0U='
+      icon: school
     }
   ];
-
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePic(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   const handleSubmit = async () => {
     try {
-      await updateUserProfile({ name: fullName, preference: selectedUseCase });
+      // await updateUserProfile({ name: fullName, preference: selectedUseCase });
       navigate('/dashboard');
     } catch (error) {
       toast.error(error.message || 'Could not enter data');
@@ -41,82 +61,132 @@ export default function OnboardingFlow() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#EDEDDF] font-inter px-4">
-      <div className={`bg-white ${step === 2 ? 'w-[600px]' : 'w-full max-w-md'} rounded-xl shadow-sm p-6 space-y-6 text-center`}>        <div className="text-3xl font-bold">Nanis</div>
+    <div className="min-h-screen flex items-center justify-center bg-[#FAFAF9] font-inter px-4">
+      <Header />
 
-        {step === 1 && (
-          <>
-            <h2 className="text-xl font-semibold text-black">
-              First things first, tell us a bit about yourself.
-            </h2>
-            <div className="flex flex-col items-center space-y-2">
-              <div className="w-16 h-16 bg-[#F3F3F3] rounded-full flex items-center justify-center">
-                <span className="text-sm text-gray-400">Add a photo</span>
+      {step === 1 && (
+        <div className="w-[302px] h-[378px] flex flex-col items-center">
+
+          <h1 className="text-[34px] leading-[42px] md:text-[32px] font-bold text-center">Welcome to Nanis</h1>
+          <p className="text-[12.5px] leading-[16px] text-[#636361] text-center mb-4">Start by sharing a few details about yourself</p>
+          <div className="flex flex-col items-center gap-2 mb-6">
+            <label htmlFor="profile-upload" className="cursor-pointer">
+              <div className="w-12 h-12 bg-[#EDEDEB] rounded-full flex items-center justify-center overflow-hidden">
+                {profilePic ? (
+                  <img
+                    src={profilePic}
+                    alt="Profile"
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                ) : (
+                  <img
+                    src={placeholder}
+                    alt="Placeholder"
+                    className="w-[50px] h-[50px] object-cover rounded-full"
+                  />
+                )}
               </div>
-              <label className="text-sm font-medium text-black w-full text-left mt-4">
-                What should we call you?
-              </label>
-              <input
-                type="text"
-                placeholder="Jane Smith"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none"
-              />
-            </div>
-            <button
-              disabled={!fullName.trim()}
-              onClick={() => setStep(2)}
-              className={`w-full text-white rounded-md py-2 text-sm font-semibold mt-4 ${fullName.trim() ? 'bg-black' : 'bg-gray-400 cursor-not-allowed'}`}
-            >
-              Continue
-            </button>
-          </>
-        )}
+            </label>
+            <input
+              id="profile-upload"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImageChange}
+            />
+            <span className="text-xs text-[#91918E]">Add a profile</span>
+          </div>
 
-        {step === 2 && (
-          <>
-            <h2 className="text-xl font-semibold text-black">
-              How are you planning to use Nanis?
-            </h2>
-            <p className="text-sm text-gray-500 mb-4">
-              We’ll streamline your setup experience accordingly.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {useCases.map((useCase) => (
-                <div
-                  key={useCase.value}
-                  onClick={() => setSelectedUseCase(useCase.value)}
-                  className={`relative border rounded-md px-4 py-3 cursor-pointer transition-all duration-200 ${selectedUseCase === useCase.value
-                      ? 'border-[#37352F] shadow-md'
-                      : 'border-gray-300'
-                    }`}
-                >
-                  {selectedUseCase === useCase.value && (
-                    <FaCheckCircle className="absolute top-2 right-2 text-[#37352F]" />
-                  )}
-                  <div className="h-24 flex items-center justify-center">
-                    <img src={useCase.image} alt={useCase.title} className="h-16" />
-                  </div>
-                  <div className="mt-2 font-semibold text-sm text-black">
+
+          <div className="w-full mb-4">
+            <label className="block text-sm text-left text-[#91918E] mb-1">What should we call you?</label>
+            <input
+              type="text"
+              placeholder="e.g. Daniel, Thomas"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="w-[302px] h-[36px] border border-[#D9D9D6] rounded-md px-[8px] py-[6px] text-sm focus:outline-none"
+            />
+          </div>
+
+          <div className="w-full relative">
+            <label className="block text-sm text-left text-[#91918E] mb-1">Set a secure password</label>
+
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder="New password"
+              className="w-[302px] h-[36px] border border-[#D9D9D6] rounded-md px-[8px] py-[6px] text-sm pr-10 focus:outline-none"
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-2 top-[43px] transform -translate-y-1/2 text-[#91918E]"
+            >
+              {showPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+            </button>
+
+            <p className="text-[10px] text-left text-[#91918E] mt-1">Minimum 8 characters</p>
+          </div>
+
+          <button
+            onClick={() => setStep(2)}
+            disabled={!fullName.trim()}
+            className="w-[302px] h-[36px] mt-6 bg-[#888870] text-white rounded-md py-2 text-sm font-medium"
+          >
+            Continue
+          </button>
+        </div>
+      )}
+
+      {step === 2 && (
+        <div className="w-[975px] h-[344px] flex flex-col justify-between gap-5">
+          <h2 className="text-[24px] font-semibold text-black text-center mb-2">
+            What will you be using Nanis for?
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 w-full">
+            {useCases.map((useCase) => (
+              <div
+                key={useCase.value}
+                onClick={() => setSelectedUseCase(useCase.value)}
+                className={`relative w-[311.67px] h-[226px] p-[20px] rounded-[10px] border cursor-pointer flex flex-col items-center justify-between text-center transition-all duration-150 ${selectedUseCase === useCase.value
+                  ? 'border-[#888870] shadow-sm'
+                  : 'border-[#E4E4E4]'
+                  }`}
+              >
+
+                <div className="w-[271.67px] h-[98px] bg-[#f5f5f4] rounded-[10px] flex items-center justify-center mb-[10px] p-[10px]">
+                  <img src={useCase.icon} alt={useCase.title} className="h-10" />
+                </div>
+
+                <div className="flex flex-col gap-[10px]">
+                  <div className="font-semibold text-[18px] leading-[16px] text-[#37352F]">
                     {useCase.title}
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {useCase.description}
-                  </p>
+                  <div>
+                    <p className="text-[14px] leading-[20px] text-[#636361]">{useCase.description}</p>
+                  </div>
                 </div>
-              ))}
-            </div>
+
+              </div>
+            ))}
+          </div>
+
+          <div className="flex justify-center w-full mt-4">
             <button
               onClick={handleSubmit}
-              className="w-full mt-4 bg-black text-white py-2 rounded-md font-semibold text-sm"
               disabled={!selectedUseCase}
+              className="w-[302px] h-[36px] bg-[#888870] text-white rounded-[8px] py-2 text-sm font-medium disabled:opacity-50"
             >
               Continue
             </button>
-          </>
-        )}
-      </div>
+          </div>
+
+        </div>
+      )}
+
+
     </div>
   );
 }
