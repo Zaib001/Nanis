@@ -260,4 +260,4 @@ export default function AuthPage({ mode = 'signup' }) {
             </div>
         </>
     );
-}
+

@@ -51,6 +51,7 @@ export default function OnboardingFlow() {
       reader.readAsDataURL(file);
     }
   };
+
   const handleSubmit = async () => {
     try {
       // await updateUserProfile({ name: fullName, preference: selectedUseCase });
