@@ -1,196 +1,263 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
+
+import Apple from '../assets/path4.svg';
+import Google from '../assets/Social icon.svg';
+import Microsoft from '../assets/logos_microsoft-icon.svg';
+import FiX from "../assets/close-circle.svg";
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+
 import {
-  FaApple,
-  FaGoogle,
-  FaMicrosoft,
-  FaArrowCircleUp,
-  FaEye,
-  FaEyeSlash,
-} from "react-icons/fa";
-import { Link } from "react-router-dom";
-import toast from "react-hot-toast";
-import {
-  loginApple,
-  loginGoogle,
-  loginMicrosoft,
-  loginUser,
-  registerUser,
-} from "../services/api";
-import { useNavigate } from "react-router-dom";
+    loginApple,
+    loginGoogle,
+    loginMicrosoft,
+    loginUser,
+    registerUser,
+} from '../services/api';
 
-export default function AuthPage({
-  mode = "login",
-  message = "Ask Nanis to build your saas star",
-}) {
-  const isSignup = mode === "signup";
+import Header from '../components/Header';
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [agreed, setAgreed] = useState(false);
+export default function AuthPage({ mode = 'signup' }) {
+    const isSignup = mode === 'signup';
+    const navigate = useNavigate();
 
-  const navigate = useNavigate();
-  const handleSubmit = async () => {
-    if (isSignup && !agreed) {
-      toast.error("Please agree to the Terms and Privacy Policy");
-      return;
-    }
+    const [email, setEmail] = useState('');
+    const [code, setCode] = useState('');
+    const [showCodeField, setShowCodeField] = useState(false);
+    const [password, setPassword] = useState('');
+    const [showPasswordField, setShowPasswordField] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
-    const payload = { email, password };
-    const toastId = toast.loading(isSignup ? "Signing up..." : "Signing in...");
+    const handleEmailSubmit = async () => {
+        if (!email.includes("@")) {
+            toast.error("Please enter a valid email.");
+            return;
+        }
 
-    try {
-      const response = isSignup
-        ? await registerUser(payload)
-        : await loginUser(payload);
+        if (!isSignup) {
+            if (!showPasswordField) {
+                setShowPasswordField(true);
+                return;
+            }
+            if (!password || password.length < 4) {
+                toast.error("Please enter your password.");
+                return;
+            }
 
-      toast.success("Success!", { id: toastId });
-      console.log("Auth Success:", response);
+            // proceed with actual login
+            navigate('/dashboard');
+            return;
+        }
 
-      if (isSignup) {
-        navigate("/verify-otp", { state: { email } });
-      } else {
-        navigate("/dashboard");
-      }
-    } catch (error) {
-      toast.error(error.message || "Authentication failed", { id: toastId });
-    }
-  };
+        // Signup flow
+        if (!showCodeField) {
+            setShowCodeField(true);
+            return;
+        }
 
-  return (
-    <div className="flex h-screen w-full font-inter text-[#37352F] bg-[#F8F8F7]">
-      <div className="w-1/2 flex flex-col justify-center items-center px-6">
-        <div className="w-[320px] space-y-3">
-          <h2 className="text-2xl font-semibold mb-4">
-            {isSignup ? "Create your account" : "Sign in"}
-          </h2>
-          {[
-            { name: "Apple", Icon: FaApple, service: loginApple },
-            { name: "Google", Icon: FaGoogle, service: loginGoogle },
-            { name: "Microsoft", Icon: FaMicrosoft, service: loginMicrosoft },
-          ].map(({ Icon, service, name }, i) => (
-            <button
-              onClick={service}
-              key={i}
-              type="button"
-              className="w-full flex items-center justify-center gap-2 bg-white border border-[#EBEAE7] rounded-md h-[34px] font-medium text-sm"
-            >
-              <Icon />
-              {isSignup ? "Sign up" : "Sign in"} with {name}
-            </button>
-          ))}
-          <div className="flex items-center gap-4 text-sm text-[#ADADAD]">
-            <div className="flex-grow h-px bg-[#EBEAE7]" />
-            <span>OR</span>
-            <div className="flex-grow h-px bg-[#EBEAE7]" />
-          </div>
-          {/* Email Field */}
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-              className="w-full h-[44px] px-[14px] py-[10px] border border-[#EBEAE7] rounded-[8px] text-sm font-medium focus:outline-none"
-            />
-          </div>
-          {/* Password Field */}
-          <div className="space-y-2">
-            <label
-              htmlFor="password"
-              className="text-sm font-medium flex justify-between"
-            >
-              Password
-              {!isSignup && (
-                <Link
-                  to="/forgot-password"
-                  className="text-xs text-[#6C6C6C] underline"
-                >
-                  Forgot password?
-                </Link>
-              )}
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              className="w-full h-[44px] px-[14px] py-[10px] border border-[#EBEAE7] rounded-md text-sm font-medium focus:outline-none"
-            />
-          </div>
-          {/* Terms Checkbox */}
-          {isSignup && (
-            <label className="flex items-start gap-2 text-xs text-[#37352F] cursor-pointer">
-              <input
-                type="checkbox"
-                checked={agreed}
-                onChange={(e) => setAgreed(e.target.checked)}
-                className="sr-only peer"
-              />
+        // If code field is shown, validate code and proceed
+        if (!code || code.length !== 4) {
+            toast.error("Please enter the 4-digit code.");
+            return;
+        }
 
-              <div className="w-[20px] h-[14px] border border-[#ADADAD] rounded-sm flex items-center justify-center peer-checked:bg-[#37352F] peer-checked:border-[#37352F]">
-                <svg
-                  className="hidden peer-checked:block w-[8px] h-[8px]"
-                  viewBox="0 0 12 10"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M1 5L4.5 8.5L11 1" stroke="white" strokeWidth="2" />
-                </svg>
-              </div>
+        // proceed to onboarding after correct code
+        navigate('/onboarding');
+    };
 
-              <span>
-                Agree to our{" "}
-                <a href="#" className="underline">
-                  Terms of Service
-                </a>{" "}
-                and{" "}
-                <a href="#" className="underline">
-                  Add commentMore actions Privacy Policy
-                </a>
-              </span>
-            </label>
-          )}
-          {/* Submit Button */}
-          <button
-            onClick={handleSubmit}
-            className="w-full flex items-center justify-center gap-2 bg-black text-white border border-[#EBEAE7] rounded-md h-[44px] font-bold text-sm"
-          >
-            {isSignup ? "Sign up" : "Sign in"}
-          </button>
-          {/* Switch link */}
-          <p className="text-sm text-center">
-            {isSignup ? "Already have an account?" : "Don’t have an account?"}{" "}
-            <Link
-              to={isSignup ? "/login" : "/signup"}
-              className="underline text-[#37352F] font-medium"
-            >
-              {isSignup ? "Sign In" : "Sign Up"}
-            </Link>
-          </p>
-        </div>
-      </div>
+    // const handleEmailSubmit = async () => {
+    //     if (!email.includes("@")) {
+    //         toast.error("Please enter a valid email.");
+    //         return;
+    //     }
 
-      {/* Right - Gradient Message Box */}
-      <div
-        className="w-1/2 h-[98%] mt-2 mr-[10px] pr-6 flex items-center justify-center rounded-[12px]"
-        style={{ backgroundColor: "#888870" }}
-      >
-        <div className="bg-white shadow-md flex items-center justify-between px-4 py-[10px] rounded-lg w-[320px] h-[44px]">
-          <input
-            type="text"
-            value={message}
-            readOnly
-            className="bg-transparent outline-none w-full text-sm font-medium text-[#37352F]"
-          />
-          <FaArrowCircleUp className="text-[#37352F]" />
-        </div>
-      </div>
-    </div>
-  );
-}
+    //     if (!isSignup) {
+    //         if (!showPasswordField) {
+    //             setShowPasswordField(true);
+    //             return;
+    //         }
+    //         if (!password || password.length < 4) {
+    //             toast.error("Please enter your password.");
+    //             return;
+    //         }
+
+    //         // proceed with actual login (you can call loginUser here)
+    //         navigate('/dashboard'); // or handle login logic
+    //         return;
+    //     }else {
+    //         setShowCodeField(true)
+    //     }
+    //     // const toastId = toast.loading(isSignup ? 'Signing up...' : 'Signing in...');
+    //     // try {
+    //     //   const payload = { email, password: 'placeholder' };
+
+    //     //   const res = isSignup
+    //     //     ? await registerUser(payload)
+    //     //     : await loginUser(payload);
+
+    //     //   toast.success("Success!", { id: toastId });
+
+    //     //   if (isSignup) {
+    //     //     // Instead of navigating, we show the code field
+    //     //     setShowCodeField(true);
+    //     //   } else {
+    //     //     navigate("/dashboard");
+    //     //   }
+    //     // } catch (err) {
+    //     //   toast.error(err.message || "Authentication failed", { id: toastId });
+    //     // }
+    // };
+
+    return (
+        <>
+            <Header />
+
+            <div className="min-h-screen bg-[#FAFAF9] font-inter text-[#37352F] flex items-center justify-center">
+                <div className="w-[302px] flex flex-col justify-between text-center space-y-5">
+
+                    {/* Login / Signup toggle */}
+                    <div className="flex justify-center">
+                        <div className="w-[125px] h-[28px] p-[2px] bg-[#F1F1EF] rounded-md flex gap-[1px]">
+                            <Link
+                                to="/login"
+                                className={`w-[65px] h-[24px] flex items-center justify-center text-sm rounded-md transition
+                  ${!isSignup ? 'bg-white text-black font-medium' : 'text-[#8E8E8E]'}`}
+                            >
+                                Log in
+                            </Link>
+                            <Link
+                                to="/signup"
+                                className={`w-[65px] h-[24px] flex items-center justify-center text-sm rounded-md transition
+                  ${isSignup ? 'bg-white text-black font-medium' : 'text-[#8E8E8E]'}`}
+                            >
+                                Sign up
+                            </Link>
+                        </div>
+                    </div>
+
+                    <h1 className="text-[34px] leading-[42px] font-bold">{isSignup ? 'Sign up' : 'Log in'}</h1>
+
+                    {/* Email input */}
+                    <div className="text-left relative">
+                        <label htmlFor="email" className="text-sm font-medium block mb-1 text-[#91918E]">
+                            Email address
+                        </label>
+
+                        <input
+                            id="email"
+                            type="email"
+                            placeholder="olivia@company.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-[302px] px-2 py-[6px] h-[36px] border border-[#D9D9D6] rounded-[8px] text-sm pr-9"
+                        />
+
+                        {email && (
+                            <button
+                                onClick={() => setEmail("")}
+                                className="absolute right-2 top-[43px] transform -translate-y-1/2 text-[#4B4B4B]"
+                            >
+                                <img src={FiX} alt="Clear" className="w-4 h-4 object-contain" />
+                            </button>
+                        )}
+                    </div>
+
+                    {showCodeField && (
+                        <div className="w-full font-inter">
+                            <p className="text-[12px] font-normal text-left text-[#91918E] leading-[15px] mb-0">
+                                We've sent a temporary sign-up code to your inbox Please enter it below
+                            </p>
+
+                            <input
+                                type="text"
+                                inputMode="numeric"
+                                maxLength={4}
+                                placeholder="____"
+                                value={code}
+                                onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, ''))}
+                                className="w-full mt-0 tracking-[0.5em] px-4 py-[6px] h-[36px] border border-[#D9D9D6] rounded-[8px] text-[14px] font-medium leading-[24px] text-[#000] text-center"
+                            />
+                        </div>
+
+                    )}
+                    {showPasswordField && !isSignup && (
+                        <div className="text-left relative">
+                            <label htmlFor="password" className="text-sm font-medium block mb-1 text-[#91918E]">
+                                Password
+                            </label>
+                            <input
+                                id="password"
+                                type={showPassword ? 'text' : 'password'}
+                                placeholder="Enter your password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-[302px] px-2 py-[6px] h-[36px] border border-[#D9D9D6] rounded-[8px] text-sm pr-9"
+                            />
+                            <button
+                                onClick={() => setShowPassword(!showPassword)}
+                                type="button"
+                                className="absolute right-2 top-[43px] transform -translate-y-1/2 text-[#4B4B4B]"
+                            >
+                                {showPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+                            </button>
+                        </div>
+                    )}
+
+                    <button
+                        onClick={handleEmailSubmit}
+                        className="w-[302px] h-[36px] bg-[#888870] text-white font-medium p-[10px] rounded-[8px] gap-[10px] text-[14px] leading-[100%]"
+                    >
+                        {isSignup
+                            ? showCodeField
+                                ? 'Create new account'
+                                : 'Continue with email'
+                            : showPasswordField
+                                ? 'Continue with password'
+                                : 'Continue with email'}
+                    </button>
+
+                    {isSignup ? (
+                        <p className="text-xs text-[#999]">
+                            By clicking continue you are agreed to our{' '}
+                            <span className="underline">Terms of Service</span> and{' '}
+                            <span className="underline">Privacy Policy</span>
+                        </p>
+                    ) : (
+                        <Link to="/forgot-password" className="text-xs text-[#91918E] underline text-center">
+                            Forgot password?
+                        </Link>
+                    )}
+
+
+                    {/* Social buttons */}
+                    <div className="space-y-2 w-[302px]">
+                        <button
+                            onClick={loginGoogle}
+                            className="w-full h-[36px] px-4 flex items-center justify-start gap-[12px] border border-[#E4E4E4] rounded-[8px] bg-white text-[14px] leading-[100%] font-medium"
+                        >
+                            <img src={Google} alt="Google" className="w-[18px] h-[18px]" />
+                            Continue with Google
+                        </button>
+
+                        <button
+                            onClick={loginMicrosoft}
+                            className="w-full h-[36px] px-4 flex items-center justify-start gap-[12px] border border-[#E4E4E4] rounded-[8px] bg-white text-[14px] leading-[100%] font-medium"
+                        >
+                            <img src={Microsoft} alt="Microsoft" className="w-[18px] h-[18px]" />
+                            Continue with Microsoft Account
+                        </button>
+
+                        <button
+                            onClick={loginApple}
+                            className="w-full h-[36px] px-4 flex items-center justify-start gap-[12px] border border-[#E4E4E4] rounded-[8px] bg-white text-[14px] leading-[100%] font-medium"
+                        >
+                            <img src={Apple} alt="Apple" className="w-[18px] h-[18px]" />
+                            Continue with Apple
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+

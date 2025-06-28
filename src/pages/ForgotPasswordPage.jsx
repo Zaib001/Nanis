@@ -1,91 +1,168 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaArrowCircleUp } from "react-icons/fa";
 import toast from "react-hot-toast";
-import { requestPasswordReset } from "../services/api";
+import FiX from "../assets/close-circle.svg";
+import Google from "../assets/Social icon.svg";
+import Microsoft from "../assets/logos_microsoft-icon.svg";
+import Apple from "../assets/path4.svg";
+import Header from "../components/Header";
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
-export default function ForgotPasswordPage({
-  message = "Ask Nanis to build your landing page",
-}) {
+export default function ForgotPasswordPage() {
+  const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
+  const [code, setCode] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
-  const handleSendReset = async () => {
-    if (!email) return toast.error("Enter your email");
-    try {
-      await requestPasswordReset({ email });
-      toast.success("Reset link sent");
-      setSent(true);
-    } catch (error) {
-      toast.error(error.message || "Password reset request failed");
-    }
+  const handleSubmit = () => {
+    if (step === 1 && !email.includes("@")) return toast.error("Enter a valid email");
+    if (step === 2 && code.length !== 4) return toast.error("Enter the 4-digit code");
+    if (step === 3 && password.length < 8) return toast.error("Minimum 8 characters required");
+
+    if (step === 4) return navigate("/login");
+    setStep(step + 1);
   };
 
   return (
-    <div className="flex h-screen w-full font-inter text-[#37352F] bg-[#F8F8F7]">
-      {/* Left Side */}
-      <div className="w-1/2 flex flex-col justify-center items-center px-6">
-        <div className="w-[320px] space-y-4">
-          {!sent ? (
-            <>
-              <h2 className="text-xl font-semibold">Reset your password</h2>
-              <p className="text-sm text-[#6C6C6C]">
-                Enter your email address and we’ll send you a link to reset your
-                password.
+    <>
+      <Header />
+      <div className="min-h-screen bg-[#FAFAF9] font-inter text-[#37352F] flex items-center justify-center">
+        <div className="w-[302px] flex flex-col justify-between text-center space-y-5">
+          <h1 className="text-[34px] leading-[42px] mb-4 font-bold">
+            {step === 1 || step === 2
+              ? "Log in"
+              : step === 3
+                ? "New Password"
+                : ""}
+          </h1>
+
+
+          {step === 1 && (
+            <div className="text-left relative">
+              <label className="text-sm font-medium block mb-1 text-[#91918E]">Email address</label>
+              <input
+                type="email"
+                placeholder="olivia@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-2 py-[6px] h-[36px] border border-[#D9D9D6] rounded-[8px] text-sm pr-9"
+              />
+              {email && (
+                <button
+                  onClick={() => setEmail("")}
+                  className="absolute right-2 top-[43px] transform -translate-y-1/2"
+                >
+                  <img src={FiX} alt="Clear" className="w-4 h-4 object-contain" />
+                </button>
+              )}
+            </div>
+          )}
+
+          {step === 2 && (
+            <div className="text-left">
+              <p className="text-[12px] text-[#91918E] leading-[15px] mb-1">
+                We’ve sent you a code to reset your password. Please enter it below.
               </p>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Email address</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email address"
-                  className="w-full h-[40px] px-[12px] border border-[#EBEAE7] rounded-md focus:outline-none text-sm"
-                />
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={4}
+                placeholder="____"
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, ""))}
+                className="w-full tracking-[0.5em] px-4 py-[6px] h-[36px] border border-[#D9D9D6] rounded-[8px] text-[14px] font-medium leading-[24px] text-center"
+              />
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className="space-y-4 text-left">
+              {/* Password Field */}
+              <div>
+                <label className="block text-sm text-[#91918E] mb-1">Enter a new password</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter a new password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full h-[36px] border border-[#D9D9D6] rounded-md px-[8px] text-sm pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#6B6B6B]"
+                  >
+                    {showPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+                  </button>
+                </div>
+                <p className="text-[10px] text-[#91918E] mt-1">Minimum 8 characters</p>
               </div>
-              <button
-                onClick={handleSendReset}
-                className="w-full bg-black text-white rounded-md h-[44px] text-sm font-medium"
-              >
-                Send reset link
-              </button>
-            </>
-          ) : (
-            <>
-              <h2 className="text-xl font-semibold">Email sent</h2>
-              <p className="text-sm text-[#6C6C6C]">
-                We’ve sent you a link to reset your password. Please check your
-                email.
+
+              {/* Confirm Password Field */}
+              <div>
+                <label className="block text-sm text-[#91918E] mb-1">Confirm your new password</label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full h-[36px] border border-[#D9D9D6] rounded-md px-[8px] text-sm pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#6B6B6B]"
+                  >
+                    {showConfirmPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+
+
+          {step === 4 && (
+            <div className=" flex flex-col items-center justify-center text-center space-y-4">
+              <div className="w-10 h-10 rounded-full bg-[#888870] flex items-center justify-center">
+                <span className="text-white text-lg">✓</span>
+              </div>
+              <h1 className="w-[468px] text-[34px] md:text-[34px] font-bold mb-4">
+                Your password has been set
+              </h1>
+              <p className="text-xs text-[#91918E] text-[12px] leading-[16px]  w-[468px]">
+                We’ll ask for this password when you log in to your account
               </p>
               <button
                 onClick={() => navigate("/login")}
-                className="underline text-sm font-medium mt-2"
+                className="text-sm underline text-[#91918E]"
               >
-                Back to login
+                Go to log in
               </button>
-            </>
+            </div>
           )}
-        </div>
-      </div>
 
-      {/* Right Side */}
-      <div
-        className="w-1/2 h-[98%] mt-2 mr-[10px] pr-6 flex items-center justify-center rounded-[12px]"
-        style={{
-          background: "linear-gradient(to bottom right, #888870, #666655)",
-        }}
-      >
-        <div className="bg-white shadow-md flex items-center justify-between px-4 py-[10px] rounded-lg w-[320px] h-[44px]">
-          <input
-            type="text"
-            value={message}
-            readOnly
-            className="bg-transparent outline-none w-full text-sm font-medium text-[#37352F]"
-          />
-          <FaArrowCircleUp className="text-[#37352F]" />
+
+          {step !== 4 && (
+            <button
+              onClick={handleSubmit}
+              className="w-full h-[36px] bg-[#888870] text-white font-medium rounded-[8px] text-[14px] leading-[100%]"
+            >
+              {step === 1 && "Send reset link"}
+              {step === 2 && "Continue"}
+              {step === 3 && "Set a password"}
+            </button>
+          )}
+
+
         </div>
-      </div>
-    </div>
+      </div >
+    </>
   );
 }
