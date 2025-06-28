@@ -41,3 +41,5 @@ export const resendOtp = (payload) =>
 
 export const updateUserProfile = (payload) =>
   request("/user/update", "POST", payload);
+
+export const uploadProfilePic = (payload) => request("/user/upload-picture","POST",payload)

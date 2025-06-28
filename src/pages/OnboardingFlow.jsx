@@ -1,63 +1,78 @@
-import React, { useState } from 'react';
-import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
-import { updateUserProfile } from '../services/api';
-import { FaCheckCircle } from 'react-icons/fa';
-import Header from '../components/Header';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import school from '../assets/teacher.svg'
-import personal from '../assets/profile.svg'
-import team from '../assets/buildings-2.svg'
-import placeholder from '../assets/placeholder.svg';
+import React, { useState } from "react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { updateUserProfile, uploadProfilePic } from "../services/api";
+import { FaCheckCircle } from "react-icons/fa";
+import Header from "../components/Header";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import school from "../assets/teacher.svg";
+import personal from "../assets/profile.svg";
+import team from "../assets/buildings-2.svg";
+import placeholder from "../assets/placeholder.svg";
 
 export default function OnboardingFlow() {
   const [step, setStep] = useState(1);
-  const [fullName, setFullName] = useState('');
-  const [selectedUseCase, setSelectedUseCase] = useState('');
+  const [fullName, setFullName] = useState("");
+  const [selectedUseCase, setSelectedUseCase] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
-
-
+  const [password, setPassword] = useState(null);
   const navigate = useNavigate();
-
 
   const useCases = [
     {
-      title: 'For my team',
-      description: 'Used by teams managing legal, HR, or operational documents collaboratively.',
-      value: 'team',
-      icon: team
+      title: "For my team",
+      description:
+        "Used by teams managing legal, HR, or operational documents collaboratively.",
+      value: "team",
+      icon: team,
     },
     {
-      title: 'For personal use',
-      description: 'Used by individuals handling personal, freelance, or one-off legal documents.',
-      value: 'personal',
-      icon: personal
+      title: "For personal use",
+      description:
+        "Used by individuals handling personal, freelance, or one-off legal documents.",
+      value: "personal",
+      icon: personal,
     },
     {
-      title: 'For school',
-      description: 'For students or educators managing research, assignments, and documents.',
-      value: 'school',
-      icon: school
-    }
+      title: "For school",
+      description:
+        "For students or educators managing research, assignments, and documents.",
+      value: "school",
+      icon: school,
+    },
   ];
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePic(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64 = reader.result;
+
+      setProfilePic(base64); // optional for preview
+
+      try {
+        await uploadProfilePic({ profilePic: base64 });
+        toast.success("Picture Uploaded Successfully");
+      } catch (error) {
+        toast.error("Image Upload Error:",error.message)
+        console.error("Upload error:", error);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
   const handleSubmit = async () => {
     try {
-      // await updateUserProfile({ name: fullName, preference: selectedUseCase });
-      navigate('/dashboard');
+      await updateUserProfile({
+        name: fullName,
+        preference: selectedUseCase,
+        password,
+      });
+      navigate("/dashboard");
     } catch (error) {
-      toast.error(error.message || 'Could not enter data');
+      toast.error(error.message || "Could not enter data");
     }
   };
 
@@ -67,9 +82,12 @@ export default function OnboardingFlow() {
 
       {step === 1 && (
         <div className="w-[302px] h-[378px] flex flex-col items-center">
-
-          <h1 className="text-[34px] leading-[42px] md:text-[32px] font-bold text-center">Welcome to Nanis</h1>
-          <p className="text-[12.5px] leading-[16px] text-[#636361] text-center mb-4">Start by sharing a few details about yourself</p>
+          <h1 className="text-[34px] leading-[42px] md:text-[32px] font-bold text-center">
+            Welcome to Nanis
+          </h1>
+          <p className="text-[12.5px] leading-[16px] text-[#636361] text-center mb-4">
+            Start by sharing a few details about yourself
+          </p>
           <div className="flex flex-col items-center gap-2 mb-6">
             <label htmlFor="profile-upload" className="cursor-pointer">
               <div className="w-12 h-12 bg-[#EDEDEB] rounded-full flex items-center justify-center overflow-hidden">
@@ -98,9 +116,10 @@ export default function OnboardingFlow() {
             <span className="text-xs text-[#91918E]">Add a profile</span>
           </div>
 
-
           <div className="w-full mb-4">
-            <label className="block text-sm text-left text-[#91918E] mb-1">What should we call you?</label>
+            <label className="block text-sm text-left text-[#91918E] mb-1">
+              What should we call you?
+            </label>
             <input
               type="text"
               placeholder="e.g. Daniel, Thomas"
@@ -111,12 +130,16 @@ export default function OnboardingFlow() {
           </div>
 
           <div className="w-full relative">
-            <label className="block text-sm text-left text-[#91918E] mb-1">Set a secure password</label>
+            <label className="block text-sm text-left text-[#91918E] mb-1">
+              Set a secure password
+            </label>
 
             <input
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               placeholder="New password"
               className="w-[302px] h-[36px] border border-[#D9D9D6] rounded-md px-[8px] py-[6px] text-sm pr-10 focus:outline-none"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
 
             <button
@@ -127,7 +150,9 @@ export default function OnboardingFlow() {
               {showPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
             </button>
 
-            <p className="text-[10px] text-left text-[#91918E] mt-1">Minimum 8 characters</p>
+            <p className="text-[10px] text-left text-[#91918E] mt-1">
+              Minimum 8 characters
+            </p>
           </div>
 
           <button
@@ -152,13 +177,16 @@ export default function OnboardingFlow() {
                 key={useCase.value}
                 onClick={() => setSelectedUseCase(useCase.value)}
                 className={`relative w-[311.67px] h-[226px] p-[20px] rounded-[10px] border cursor-pointer flex flex-col items-center justify-between text-center transition-all duration-150 ${selectedUseCase === useCase.value
-                  ? 'border-[#888870] shadow-sm'
-                  : 'border-[#E4E4E4]'
+                    ? "border-[#888870] shadow-sm"
+                    : "border-[#E4E4E4]"
                   }`}
               >
-
                 <div className="w-[271.67px] h-[98px] bg-[#f5f5f4] rounded-[10px] flex items-center justify-center mb-[10px] p-[10px]">
-                  <img src={useCase.icon} alt={useCase.title} className="h-10" />
+                  <img
+                    src={useCase.icon}
+                    alt={useCase.title}
+                    className="h-10"
+                  />
                 </div>
 
                 <div className="flex flex-col gap-[10px]">
@@ -166,10 +194,11 @@ export default function OnboardingFlow() {
                     {useCase.title}
                   </div>
                   <div>
-                    <p className="text-[14px] leading-[20px] text-[#636361]">{useCase.description}</p>
+                    <p className="text-[14px] leading-[20px] text-[#636361]">
+                      {useCase.description}
+                    </p>
                   </div>
                 </div>
-
               </div>
             ))}
           </div>
@@ -183,11 +212,8 @@ export default function OnboardingFlow() {
               Continue
             </button>
           </div>
-
         </div>
       )}
-
-
     </div>
   );
 }
