@@ -24,6 +24,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import OtpVerificationPage from './pages/OtpVerificationPage';
 import OnboardingFlow from './pages/OnboardingFlow';
 import './index.css';
+import Home from './pages/Home';
 
 
 const App = () => {
@@ -44,7 +45,7 @@ const App = () => {
           path="/dashboard"
           element={
             <DashboardLayout>
-              <h1 className="text-2xl font-bold">Main Content Area</h1>
+            <Home/>
             </DashboardLayout>
           }
         />

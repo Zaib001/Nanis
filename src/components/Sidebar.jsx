@@ -31,6 +31,7 @@ import calendar from '../assets/calendar.svg';
 import copy from '../assets/document-copy.svg';
 import task from '../assets/Frame 2043684104.svg';
 import folder from '../assets/vuesax/bulk/folder-cloud.svg';
+import { useNavigate } from 'react-router-dom';
 
 const SectionHeader = ({ title }) => (
     <div className="font-inter text-xs w-full h-[30px] px-2 font-normal text-[#91918E] flex items-center">
@@ -38,29 +39,37 @@ const SectionHeader = ({ title }) => (
     </div>
 );
 
-const SidebarItem = ({ icon: Icon, imgSrc, label, muted = false, onClick }) => (
+
+const SidebarItem = ({ icon: Icon, imgSrc, label, muted = false, onClick }) => {
+  const navigate = useNavigate();
+  const routes = {
+    "Home": "/dashboard",
+    "Settings": "/settings",
+    "Invite members": "/invite",
+    "Usage Insights": "/usage",
+    // Add more label-route mappings here
+  };
+
+  return (
     <div
-        onClick={onClick}
-        className={`flex  items-center px-2 py-[6px] rounded-[6px] cursor-pointer gap-2 transition-all duration-200
+      onClick={() => onClick ? onClick() : navigate(routes[label] || '/dashboard')}
+      className={`flex items-center px-2 py-[6px] rounded-[6px] cursor-pointer gap-2 transition-all duration-200
       hover:bg-[rgba(0,0,0,0.03)] text-sm
       ${muted ? 'text-[#adadac]' : 'text-[#5F5E5B]'}
     `}
-        style={{ height: '30px' }}
+      style={{ height: '30px' }}
     >
-        {imgSrc ? (
-            <img
-                src={imgSrc}
-                alt="icon"
-                className={`object-contain ${muted ? 'w-[14.6px] h-[14.6px]' : 'w-[18px] h-[18px]'}`}
-            />
-        ) : (
-            <Icon className="w-[18px] h-[18px]" />
-        )}
-        <span className="truncate font-inter text-[#5F5E5B] font-normal leading-[20px] tracking-[-0.04em]">
-            {label}
-        </span>
+      {imgSrc ? (
+        <img src={imgSrc} alt="icon" className={`object-contain ${muted ? 'w-[14.6px]' : 'w-[18px]'} h-[18px]`} />
+      ) : (
+        <Icon className="w-[18px] h-[18px]" />
+      )}
+      <span className="truncate font-inter text-[#5F5E5B] font-normal leading-[20px] tracking-[-0.04em]">
+        {label}
+      </span>
     </div>
-);
+  );
+};
 
 export default function Sidebar() {
     const [showServicesMore, setShowServicesMore] = useState(false);
