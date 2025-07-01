@@ -4,7 +4,7 @@ import Sidebar from './Sidebar';
 const DashboardLayout = ({ children }) => (
   <div className="flex h-screen overflow-hidden">
     <Sidebar />
-    <div className="flex-1 p-6 overflow-auto">{children}</div>
+    <div className="flex-1 p-3 overflow-auto">{children}</div>
   </div>
 );
 
