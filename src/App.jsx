@@ -25,6 +25,7 @@ import OtpVerificationPage from './pages/OtpVerificationPage';
 import OnboardingFlow from './pages/OnboardingFlow';
 import './index.css';
 import Home from './pages/Home';
+import DashboardSection from './components/DashboardSection';
 
 
 const App = () => {
@@ -43,6 +44,14 @@ const App = () => {
         {/* Protected/Main Routes */}
         <Route
           path="/dashboard"
+          element={
+            <DashboardLayout>
+            <DashboardSection/>
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/home"
           element={
             <DashboardLayout>
             <Home/>
