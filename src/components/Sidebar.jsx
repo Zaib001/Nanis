@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { FiSearch, FiPlus } from "react-icons/fi"
 import {
     FaChevronDown, FaEdit, FaChevronUp, FaFileContract, FaParagraph, FaTasks, FaBell
 } from 'react-icons/fa';
@@ -32,6 +33,9 @@ import copy from '../assets/document-copy.svg';
 import task from '../assets/Frame 2043684104.svg';
 import folder from '../assets/vuesax/bulk/folder-cloud.svg';
 import { useNavigate } from 'react-router-dom';
+import { FiSettings, FiUserPlus } from 'react-icons/fi'
+import { Link } from 'react-router-dom';
+import ChatHistoryPanel from './ChatHistoryPanel';
 
 const SectionHeader = ({ title }) => (
     <div className="font-inter text-xs w-full h-[30px] px-2 font-normal text-[#91918E] flex items-center">
@@ -41,34 +45,34 @@ const SectionHeader = ({ title }) => (
 
 
 const SidebarItem = ({ icon: Icon, imgSrc, label, muted = false, onClick }) => {
-  const navigate = useNavigate();
-  const routes = {
-    "Home": "/dashboard",
-    "Settings": "/settings",
-    "Invite members": "/invite",
-    "Usage Insights": "/usage",
-    // Add more label-route mappings here
-  };
+    const navigate = useNavigate();
+    const routes = {
+        "Home": "/dashboard",
+        "Settings": "/settings",
+        "Invite members": "/invite",
+        "Usage Insights": "/usage",
+        // Add more label-route mappings here
+    };
 
-  return (
-    <div
-      onClick={() => onClick ? onClick() : navigate(routes[label] || '/dashboard')}
-      className={`flex items-center px-2 py-[6px] rounded-[6px] cursor-pointer gap-2 transition-all duration-200
+    return (
+        <div
+            onClick={() => onClick ? onClick() : navigate(routes[label] || '/dashboard')}
+            className={`flex items-center px-2 py-[6px] rounded-[6px] cursor-pointer gap-2 transition-all duration-200
       hover:bg-[rgba(0,0,0,0.03)] text-sm
       ${muted ? 'text-[#adadac]' : 'text-[#5F5E5B]'}
     `}
-      style={{ height: '30px' }}
-    >
-      {imgSrc ? (
-        <img src={imgSrc} alt="icon" className={`object-contain ${muted ? 'w-[14.6px]' : 'w-[18px]'} h-[18px]`} />
-      ) : (
-        <Icon className="w-[18px] h-[18px]" />
-      )}
-      <span className="truncate font-inter text-[#5F5E5B] font-normal leading-[20px] tracking-[-0.04em]">
-        {label}
-      </span>
-    </div>
-  );
+            style={{ height: '30px' }}
+        >
+            {imgSrc ? (
+                <img src={imgSrc} alt="icon" className={`object-contain ${muted ? 'w-[14.6px]' : 'w-[18px]'} h-[18px]`} />
+            ) : (
+                <Icon className="w-[18px] h-[18px]" />
+            )}
+            <span className="truncate font-inter text-[#5F5E5B] font-normal leading-[20px] tracking-[-0.04em]">
+                {label}
+            </span>
+        </div>
+    );
 };
 
 export default function Sidebar() {
@@ -76,6 +80,7 @@ export default function Sidebar() {
     const [showProductivityMore, setShowProductivityMore] = useState(false);
     const [showArrowIcon, setShowArrowIcon] = useState(false);
     const [showAccountDropdown, setShowAccountDropdown] = useState(false);
+    const [showChatHistory, setShowChatHistory] = useState(false);
 
     return (
         <aside
@@ -83,13 +88,7 @@ export default function Sidebar() {
             onMouseEnter={() => setShowArrowIcon(true)}
             onMouseLeave={() => setShowArrowIcon(false)}
         >
-            <div
-                className="h-full overflow-y-auto flex flex-col"
-                style={{
-                    scrollbarWidth: 'none', // Firefox
-                    msOverflowStyle: 'none', // IE/Edge
-                }}
-            >
+            <div className="h-full flex overflow-y-auto flex-col">
                 {/* Hide scrollbar in WebKit browsers */}
                 <style>
                     {`
@@ -122,33 +121,138 @@ export default function Sidebar() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -8 }}
                                 transition={{ duration: 0.2 }}
-                                className="absolute top-[20px] left-8 bg-white border border-[#E5E5E5] shadow-md rounded-md w-[170px] z-50"
+                                className="fixed top-[32px] left-[8px] w-[300px] h-[310px] rounded-[12px] bg-white z-[100] 
+                 shadow-[0px_14px_28px_-6px_rgba(0,0,0,0.1),0px_2px_4px_-1px_rgba(0,0,0,0.06),0px_0px_0px_1px_#54483114]
+                 border border-[#E5E5E5] flex flex-col justify-between"
                             >
-                                <button
-                                    onClick={() => {
-                                        setShowAccountDropdown(false);
-                                        window.location.href = "/login";
-                                        localStorage.clear();
-                                        sessionStorage.clear();
-                                        document.cookie.split(";").forEach(cookie => {
-                                            const name = cookie.split("=")[0].trim();
-                                            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;";
-                                        });
-                                    }}
-                                    className="w-full px-4 py-2 text-sm text-left hover:bg-gray-100 text-[#5F5E5B]"
-                                >
-                                    Logout
-                                </button>
+                                {/* Header */}
+                                <div className="p-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-9 h-9 bg-[#3366FF] text-white flex items-center justify-center rounded-md text-sm font-semibold">
+                                            L
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-semibold text-[#232323]">Sinan’s Nanis</p>
+                                            <p className="text-xs text-[#888870]">Trial Plan · 1 member</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-[8px] mt-[12px] w-[276px] h-[28px]">
+                                        {/* Settings Button */}
+                                        <button
+                                            className="w-[86px] h-[32px] px-[8px] flex items-center gap-[6px] text-sm text-[#464440] 
+               border border-[#37352F29] rounded-[6px] hover:bg-[#F8F8F7]"
+                                        >
+                                            <FiSettings className="w-4 h-4" />
+                                            <span>Settings</span>
+                                        </button>
+
+                                        {/* Invite Members Button */}
+                                        <button
+                                            className="w-[127px] h-[32px] px-[8px] flex items-center justify-center gap-[6px] 
+             text-xs text-[#464440] border border-[#37352F29] rounded-[6px] hover:bg-[#F8F8F7]"
+                                        >
+                                            <FiUserPlus className="w-3 h-3" />
+                                            <span className="leading-none">Invite members</span>
+                                        </button>
+
+                                    </div>
+                                </div>
+
+                                {/* Divider */}
+                                <div className="border-t border-[#E5E5E5] px-4 py-2 text-xs text-[#888870]">
+                                    name@email.com
+                                </div>
+
+                                {/* Workspaces */}
+                                <div className="px-4 flex flex-col gap-1">
+                                    <div className="flex justify-between items-center py-2 px-3 bg-[#F8F8F7] rounded-md cursor-pointer">
+                                        <div className="flex items-center gap-2 text-sm">
+                                            <div className="w-5 h-5 bg-[#3366FF] text-white flex items-center justify-center rounded text-[12px]">
+                                                L
+                                            </div>
+                                            <Link to='/home'>Luis’s Notion</Link>
+                                        </div>
+                                        <span className="text-xl text-[#3390ED]">✓</span>
+                                    </div>
+
+                                    <div className="flex items-center gap-2 text-sm px-3 py-1 cursor-pointer hover:bg-[#F8F8F7] rounded-md">
+                                        <span className="text-lg">＋</span>
+                                        <span>New workspace</span>
+                                    </div>
+                                </div>
+
+                                {/* Footer */}
+                                <div className="px-4 py-2 text-sm flex flex-col text-[#5F5E5B]">
+                                    <button className="text-left hover:bg-[#F8F8F7] py-1 px-2 rounded-md">
+                                        Add another account
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setShowAccountDropdown(false);
+                                            window.location.href = "/login";
+                                            localStorage.clear();
+                                            sessionStorage.clear();
+                                            document.cookie.split(";").forEach(cookie => {
+                                                const name = cookie.split("=")[0].trim();
+                                                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;";
+                                            });
+                                        }}
+                                        className="text-left hover:bg-[#F8F8F7] py-1 px-2 rounded-md"
+                                    >
+                                        Log out
+                                    </button>
+                                </div>
                             </motion.div>
                         )}
                     </AnimatePresence>
 
 
+
                     <div className="flex gap-2 text-[#5F5E5B] absolute right-1 top-[1px]">
                         {showArrowIcon && (
-                            <img src={arrow} alt="undo" className="w-[18px] h-[18px] hover:opacity-80 cursor-pointer" />
+                            <img
+                                src={arrow}
+                                alt="toggle history"
+                                className="w-[18px] h-[18px] hover:opacity-80 cursor-pointer"
+                            />
                         )}
-                        <img src={pen} alt="edit" className="w-[18px] h-[18px] hover:opacity-80 cursor-pointer" />
+
+
+                        <img src={pen} alt="edit" className="w-[18px] h-[18px] hover:opacity-80 cursor-pointer" onClick={() => setShowChatHistory(prev => !prev)}
+                        />
+                        {showChatHistory && (
+                            <AnimatePresence>
+
+                                <motion.div
+                                    initial={{ x: -300, opacity: 0 }}
+                                    animate={{ x: 0, opacity: 1 }}
+                                    exit={{ x: -300, opacity: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="fixed top-0 left-[210px] w-[254px] h-[928px] bg-white border border-gray-200 p-3 z-30 shadow-sm"
+                                >
+                                    <div className="flex items-center justify-between mb-2 py-[5px] px-[10px]">
+                                        <span className="text-sm font-medium text-gray-700">Chat history</span>
+
+                                        <div className="flex items-center gap-2">
+                                            <img src={arrow} alt="Back" className="w-4 h-4 cursor-pointer rotate-180" onClick={() => setShowChatHistory(prev => !prev)}
+                                            />
+                                            <FiPlus className="w-4 h-4 text-gray-600 cursor-pointer" />
+                                        </div>
+                                    </div>                                    <div className="w-[234px] h-[40px] flex items-center border border-[#E5E5E5] rounded-[6px] px-2 py-1 gap-2 bg-white">
+                                        <FiSearch className="w-4 h-4 text-[#A0A0A0]" />
+                                        <input
+                                            type="text"
+                                            placeholder="Search or start new chat"
+                                            className="flex-1 text-sm text-gray-600 outline-none bg-transparent placeholder:text-[#A0A0A0]"
+                                        />
+                                    </div>
+                                    <div className="text-center text-gray-400 text-xs">No result</div>
+                                </motion.div>
+
+                            </AnimatePresence>
+                        )
+                        }
                     </div>
                 </div>
 
