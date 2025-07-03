@@ -15,11 +15,11 @@ import arrow from '../assets/u_left-arrow-from-left.svg';
 import add from '../assets/add.svg';
 import set from '../assets/change.svg';
 import book from '../assets/book.svg';
-import pen from '../assets/vuesax/linear/edit-2.svg';
+import pen from '../assets/Frame 15.svg';
 import dot from '../assets/Vector-1.svg';
 import home from '../assets/home-2.svg';
 import user from '../assets/block-1.svg';
-import profile from '../assets/profile-add.svg';
+import profile from '../assets/people.svg';
 import eSignature from '../assets/Signature.svg';
 import icon from '../assets/Group.svg';
 import research from '../assets/magic-star.svg';
@@ -36,7 +36,8 @@ import { useNavigate } from 'react-router-dom';
 import { FiSettings, FiUserPlus } from 'react-icons/fi'
 import { Link } from 'react-router-dom';
 import ChatHistoryPanel from './ChatHistoryPanel';
-
+import setting from '../assets/setting.svg';
+import invite from '../assets/Invite Member Small.svg'
 const SectionHeader = ({ title }) => (
     <div className="font-inter text-xs w-full h-[30px] px-2 font-normal text-[#91918E] flex items-center">
         {title}
@@ -139,22 +140,24 @@ export default function Sidebar() {
 
                                     <div className="flex gap-[8px] mt-[12px] w-[276px] h-[28px]">
                                         {/* Settings Button */}
+                                        {/* Settings Button */}
                                         <button
                                             className="w-[86px] h-[32px] px-[8px] flex items-center gap-[6px] text-sm text-[#464440] 
-               border border-[#37352F29] rounded-[6px] hover:bg-[#F8F8F7]"
+  border border-[#37352F29] rounded-[6px] hover:bg-[#F8F8F7]"
                                         >
-                                            <FiSettings className="w-4 h-4" />
-                                            <span>Settings</span>
+                                            <img src={setting} alt="Settings" className="w-4 h-4" />
+                                            <span className='text-xs text-[#73726E]leading-none'>Settings</span>
                                         </button>
 
                                         {/* Invite Members Button */}
                                         <button
                                             className="w-[127px] h-[32px] px-[8px] flex items-center justify-center gap-[6px] 
-             text-xs text-[#464440] border border-[#37352F29] rounded-[6px] hover:bg-[#F8F8F7]"
+  text-xs text-[#464440] border border-[#37352F29] rounded-[6px] hover:bg-[#F8F8F7]"
                                         >
-                                            <FiUserPlus className="w-3 h-3" />
-                                            <span className="leading-none">Invite members</span>
+                                            <img src={invite} alt="Invite" className="w-4 h-4" />
+                                            <span className="text-xs text-[#73726E]leading-none">Invite members</span>
                                         </button>
+
 
                                     </div>
                                 </div>
@@ -235,7 +238,7 @@ export default function Sidebar() {
                                         <span className="text-sm font-medium text-gray-700">Chat history</span>
 
                                         <div className="flex items-center gap-2">
-                                            <img src={arrow} alt="Back" className="w-4 h-4 cursor-pointer rotate-180" onClick={() => setShowChatHistory(prev => !prev)}
+                                            <img src={arrow} alt="Back" className="w-4 h-4 cursor-pointer rotate-180 hover:opacity-80" onClick={() => setShowChatHistory(prev => !prev)}
                                             />
                                             <FiPlus className="w-4 h-4 text-gray-600 cursor-pointer" />
                                         </div>
@@ -307,6 +310,7 @@ export default function Sidebar() {
                     <SectionHeader title="Productivity" />
                     <SidebarItem imgSrc={eSignature} label="eSignature" />
                     <SidebarItem imgSrc={updates} label="Chats" />
+                    <SidebarItem imgSrc={calendar} label="Calendar" />
 
 
                     <AnimatePresence initial={false}>
@@ -317,7 +321,6 @@ export default function Sidebar() {
                                 exit={{ height: 0, opacity: 0 }}
                                 transition={{ duration: 0.3, ease: 'easeInOut' }}
                             >
-                                <SidebarItem imgSrc={calendar} label="Calendar" />
                                 <SidebarItem imgSrc={task} label="Tasks" />
                                 <SidebarItem imgSrc={book} label="Legal news" />
                             </motion.div>
@@ -344,7 +347,7 @@ export default function Sidebar() {
                     <SectionHeader title="Settings" />
                     <SidebarItem imgSrc={set} label="Settings" />
                     <SidebarItem imgSrc={trend} label="Usage Insights" />
-                    <SidebarItem imgSrc={profile} label="Invite members" />
+                    <SidebarItem imgSrc={profile} label="Teams" />
                 </div>
             </div>
         </aside>
