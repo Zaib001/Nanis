@@ -26,6 +26,7 @@ import OnboardingFlow from './pages/OnboardingFlow';
 import './index.css';
 import Home from './pages/Home';
 import DashboardSection from './components/DashboardSection';
+import ChatPage from './pages/ChatPage';
 
 
 const App = () => {
@@ -55,6 +56,15 @@ const App = () => {
           element={
             <DashboardLayout>
             <Home/>
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/chat/:chatId"
+          element={
+            <DashboardLayout>
+            <ChatPage />
+
             </DashboardLayout>
           }
         />
