@@ -36,7 +36,7 @@ export default function MeetingsSection() {
           </div>
 
           {/* Right Side - Faces */}
-          <div className="w-[196px] h-[194px] relative flex items-center justify-center">
+          <div className="w-[378px] h-[280.13px] relative flex items-center justify-center">
             <img src={main} alt="Meeting Visual" className="w-[90%]" />
           </div>
         </div>

@@ -129,6 +129,7 @@ export default function ChatPage() {
                         setPrompt={setPrompt}
                         onSend={handleSend}
                         showHeading={false}
+                        showLoadPrompt = {false}
                     />
                 </div>
             </div>
