@@ -1,88 +1,137 @@
 import { useParams, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { PromptSection } from "../components/PromptSection";
-import { FiThumbsUp, FiThumbsDown, FiCopy,FiChevronDown } from "react-icons/fi";
+import { FiThumbsUp, FiThumbsDown, FiCopy } from "react-icons/fi";
+import { getConversationMessages } from "../services/api";
 
 export default function ChatPage() {
-    const { chatId } = useParams();
-    const query = new URLSearchParams(useLocation().search);
-    const initialPrompt = query.get("q") || "";
+  const { chatId } = useParams();
+  const query = new URLSearchParams(useLocation().search);
+  const initialPrompt = query.get("q") || "";
 
-    const [prompt, setPrompt] = useState("");
-    const [messages, setMessages] = useState([]);
-    const [isTyping, setIsTyping] = useState(false);
+  const [prompt, setPrompt] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [isTyping, setIsTyping] = useState(false);
 
-    // Dummy response logic
-    const getDummyResponse = (promptText) => {
-        if (promptText.toLowerCase().includes("contract")) {
-            return "Here's a dummy contract template with clauses like Parties, Payment, Termination, etc.";
-        } else if (promptText.toLowerCase().includes("documents")) {
-            return "Keep these documents: contract, receipts, change orders, and warranty certificates.";
-        } else {
-            return `Thanks for your message: "${promptText}". We're generating a dummy response.`;
+  // Load conversation messages from backend
+  useEffect(() => {
+    if (!chatId) return;
+
+    getConversationMessages(chatId)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data.messages)) {
+          setMessages(data.messages);
         }
-    };
+      });
 
-    // Load initial prompt from URL
-    useEffect(() => {
-        if (initialPrompt) {
-            const userMsg = { id: 1, role: "user", content: initialPrompt };
-            const assistantId = 2;
-            const assistantContent = getDummyResponse(initialPrompt);
+    // If there's an initial prompt, trigger stream
+    if (initialPrompt) {
+      sendPrompt(initialPrompt);
+    }
+  }, [chatId]);
 
-            setMessages([
-                userMsg,
-                { id: assistantId, role: "assistant", content: "" }
-            ]);
+const sendPrompt = async (text) => {
+  if (!text || !text.trim()) return;
 
-            setIsTyping(true);
+  if (!chatId) {
+    console.error("No chatId available");
+    return;
+  }
 
-            let i = 0;
-            const interval = setInterval(() => {
-                setMessages((prev) =>
-                    prev.map((msg) =>
-                        msg.id === assistantId
-                            ? { ...msg, content: assistantContent.slice(0, i + 1) }
-                            : msg
-                    )
-                );
-                i++;
-                if (i >= assistantContent.length) {
-                    clearInterval(interval);
-                    setIsTyping(false);
-                }
-            }, 15);
-        }
-    }, [initialPrompt]);
+  // Add user message to UI immediately
+  const userMsg = { id: Date.now(), role: "user", content: text };
+  setMessages((prev) => [...prev, userMsg]);
+  setPrompt("");
+  setIsTyping(true);
 
-    // Handle new prompt
-    const handleSend = () => {
-        if (!prompt.trim()) return;
+  // Create placeholder for assistant response
+  const assistantId = Date.now() + 1;
+  let fullResponse = "";
+  setMessages((prev) => [
+    ...prev,
+    { id: assistantId, role: "assistant", content: "" },
+  ]);
 
-        const userMsg = { id: Date.now(), role: "user", content: prompt };
-        const assistantId = Date.now() + 1;
-        const assistantContent = getDummyResponse(prompt);
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/conversation/generate`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: text,
+          conversationId: chatId,
+        }),
+      }
+    );
 
-        setMessages((prev) => [...prev, userMsg, { id: assistantId, role: "assistant", content: "" }]);
-        setPrompt("");
-        setIsTyping(true);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-        let i = 0;
-        const interval = setInterval(() => {
-            setMessages((prev) =>
+    if (!response.body) {
+      throw new Error("ReadableStream not supported in this browser");
+    }
+
+    // Handle the SSE stream
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value);
+      const lines = chunk.split('\n').filter(line => line.trim() !== '');
+
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const data = line.replace('data: ', '');
+          
+          // Handle both regular messages and [DONE] signal
+          if (data === '[DONE]') {
+            setIsTyping(false);
+            return;
+          }
+
+          try {
+            const parsed = JSON.parse(data);
+            const content = parsed?.content || '';
+
+            if (content) {
+              fullResponse += content;
+              setMessages((prev) =>
                 prev.map((msg) =>
-                    msg.id === assistantId
-                        ? { ...msg, content: assistantContent.slice(0, i + 1) }
-                        : msg
+                  msg.id === assistantId
+                    ? { ...msg, content: fullResponse }
+                    : msg
                 )
-            );
-            i++;
-            if (i >= assistantContent.length) {
-                clearInterval(interval);
-                setIsTyping(false);
+              );
             }
-        }, 15);
-    };
+          } catch (err) {
+            console.error("Error parsing JSON:", err, data);
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Error during streaming fetch:", err);
+    // Add error message to UI
+    setMessages((prev) => [
+      ...prev,
+      { 
+        id: Date.now() + 2, 
+        role: "assistant", 
+        content: "Sorry, I encountered an error. Please try again." 
+      },
+    ]);
+  } finally {
+    setIsTyping(false);
+  }
+};
+
+const handleSend = () => sendPrompt(prompt);
 
     return (
         <div className="w-full min-h-screen bg-[#FAFAFA] pb-[150px]">
@@ -134,5 +183,7 @@ export default function ChatPage() {
                 </div>
             </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 }
