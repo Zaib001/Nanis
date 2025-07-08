@@ -33,7 +33,8 @@ export const loginMicrosoft = () => request("/auth/microsoft", "GET");
 export const loginApple = () => request("/auth/apple", "GET");
 export const requestPasswordReset = (payload) =>
   request("/auth/request-password-reset", "POST", payload);
-export const resetPassword = (payload) => request("/auth/reset-password", "POST", payload)
+export const resetPassword = (payload) =>
+  request("/auth/reset-password", "POST", payload);
 export const verifySignupOtp = (payload) =>
   request("/auth/verify-otp", "POST", payload);
 export const resendOtp = (payload) =>
@@ -42,4 +43,21 @@ export const resendOtp = (payload) =>
 export const updateUserProfile = (payload) =>
   request("/user/update", "POST", payload);
 
-export const uploadProfilePic = (payload) => request("/user/upload-picture","POST",payload)
+export const uploadProfilePic = (payload) =>
+  request("/user/upload-picture", "POST", payload);
+
+//conversation
+export const createConversation = (payload) => request("/conversation", "POST");
+export const getConversationMessages = (id) =>
+  fetch(`${import.meta.env.VITE_API_BASE_URL}/conversation/messages/${id}`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+export const generateResponse = (payload) =>
+  fetch(`${import.meta.env.VITE_API_BASE_URL}/conversation/generate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });

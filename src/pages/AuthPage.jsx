@@ -12,16 +12,17 @@ import {
   loginApple,
   loginGoogle,
   loginMicrosoft,
-  loginUser,
   registerUser,
   verifySignupOtp,
 } from "../services/api";
 
 import Header from "../components/Header";
+import { useAuth } from "../providers/AuthProvider";
 
 export default function AuthPage({ mode = "signup" }) {
   const isSignup = mode === "signup";
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
@@ -46,9 +47,15 @@ export default function AuthPage({ mode = "signup" }) {
         return;
       }
 
-      // proceed with actual login
-      navigate("/dashboard");
-      return;
+      try {
+        await login({ email, password });
+        // proceed with actual login
+        navigate("/dashboard");
+        return;
+      } catch (error) {
+        toast.error(error.message);
+        return;
+      }
     }
 
     // Signup flow
