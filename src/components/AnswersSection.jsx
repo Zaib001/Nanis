@@ -33,7 +33,7 @@ export default function AnswersSection() {
           </div>
 
           {/* Right Side - Faces */}
-          <div className="w-[196px] h-[194px] mt-7 relative flex items-center justify-center">
+          <div className="w-[882px] h-[240px] mt-7 relative flex items-center justify-center">
             <img src={main} alt="Meeting Visual" className="w-[100%]" />
           </div>
         </div>

@@ -1,12 +1,12 @@
 import MeetingsSection from "./MeetingsSection";
 import AnswersSection from "./AnswersSection";
 import { ActivitySection } from "./ActivitySection";
-import { PromptSection } from "./PromptSection";
 import TasksSection from "./TasksSection";
 import DashboardHeader from "./DashboardHeader";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createConversation } from "../services/api";
+import {PromptSection} from './PromptSection';
 
 export default function DashboardSection() {
   const [prompt, setPrompt] = useState("");
@@ -30,6 +30,7 @@ export default function DashboardSection() {
             setPrompt={setPrompt}
             onSend={handleSend}
           />{" "}
+
           <ActivitySection />
           <MeetingsSection />
           <AnswersSection />

@@ -69,7 +69,7 @@ const SidebarItem = ({ icon: Icon, imgSrc, label, muted = false, onClick }) => {
             ) : (
                 <Icon className="w-[18px] h-[18px]" />
             )}
-            <span className="truncate font-inter text-[#5F5E5B] font-normal leading-[20px] tracking-[-0.04em]">
+            <span className="truncate font-inter text-[#91918E] font-normal leading-[20px] tracking-[-0.04em]">
                 {label}
             </span>
         </div>
