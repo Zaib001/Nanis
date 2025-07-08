@@ -6,8 +6,10 @@ import attach from "../assets/Vector (1).svg";
 import mention from "../assets/At.svg";
 import send from "../assets/Submit AI.svg";
 import { FiChevronDown } from "react-icons/fi";
+import AllSourcesDropdown from "./AllSourcesDropdown";
+import AskDropdown from "./AskDropdown";
 
-export function PromptSection({ prompt, setPrompt, onSend, showHeading = true }) {
+export function PromptSection({ prompt, setPrompt, onSend, showHeading = true, showLoadPrompt = true, }) {
   return (
     <div className="w-full px-4 sm:px-[50px] flex justify-center items-center">
       <div className="w-full max-w-[756px] font-inter">
@@ -30,11 +32,12 @@ export function PromptSection({ prompt, setPrompt, onSend, showHeading = true })
         >
           {/* Top Row - Input Prompt */}
           <div className="flex items-center gap-2 text-[13px] text-[#888870] font-medium">
-            <div className="flex items-center gap-1 text-[14px] font-semibold text-[#73726E] whitespace-nowrap">
-              <span>Load prompt</span>
-              <FiChevronDown className="w-4 h-4 text-[#73726E]" />
-            </div>
-
+            {showLoadPrompt && (
+              <div className="flex items-center gap-1 text-[14px] font-semibold text-[#73726E] whitespace-nowrap">
+                <span>Load prompt</span>
+                <FiChevronDown className="w-4 h-4 text-[#73726E]" />
+              </div>
+            )}
 
             <input
               type="text"
@@ -49,34 +52,17 @@ export function PromptSection({ prompt, setPrompt, onSend, showHeading = true })
               placeholder="Ask, find anything from your workspace or legal info..."
               className="text-sm text-[#464440] w-full outline-none bg-transparent"
             />
-
           </div>
 
           {/* Bottom Row - Controls */}
           <div className="flex justify-between items-center text-sm text-[#6C6C6C]">
             <div className="flex gap-5 items-center">
-              <div className="flex items-center bg-[#0000000A] rounded-lg overflow-hidden text-sm font-medium">
-                {/* Active Tab - Ask */}
-                <div className="inline-flex items-center rounded-lg p-[2px] text-sm font-medium">
-                  {/* Left: Ask */}
-                  <div className="px-4 py-1 bg-white text-[#232323] rounded-l-lg">
-                    ASK
-                  </div>
-
-                  {/* Divider */}
-                  <div className="w-px h-[24px] bg-[#E0E0E0]" />
-
-                  {/* Right: Icon */}
-                  <div className="px-2 py-[6px] bg-white text-[#C0C0C0] rounded-r-lg flex items-center justify-center">
-                    <FiChevronDown className="w-4 h-4" />
-                  </div>
-                </div>
-
-                {/* Inactive Tab - Research */}
-                <div className="px-3 py-1 text-[#A0A0A0]">
-                  Research
-                </div>
+<div className="flex items-center bg-[#0000000A] rounded-lg text-sm font-medium relative z-10">
+                <AskDropdown />
+                <div className="px-3 py-1 text-[#A0A0A0]">Research</div>
               </div>
+
+
               <div className="flex items-center gap-1 text-[14px] font-semibold text-[#73726E]">
                 <img src={agent} className="w-5 h-5" />
 
@@ -88,9 +74,7 @@ export function PromptSection({ prompt, setPrompt, onSend, showHeading = true })
             <div className="flex gap-3 items-center">
               <img src={globe} className="w-7 h-7" />
               <div className="flex items-center gap-1">
-                <img src={source} className="w-[18px] h-[18px]" />
-                <span>All sources</span>
-                <FiChevronDown className="w-4 h-4 text-[#73726E]" />
+                <AllSourcesDropdown />
               </div>
               <img src={attach} className="w-5 h-5" />
               <img src={mention} className="w-5 h-5" />

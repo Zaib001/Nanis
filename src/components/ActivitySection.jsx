@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import avatars from "../assets/Component 1.svg";
 import fileIcon from "../assets/vuesax/bulk/vuesax/bulk/document-text.svg";
 import CardHeading from "./CardHeading";
@@ -11,6 +11,24 @@ const activities = Array.from({ length: 6 }).map((_, i) => ({
 
 export function ActivitySection() {
   const scrollRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const updateScrollButtons = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 0);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+  };
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", updateScrollButtons);
+    updateScrollButtons(); // on mount
+
+    return () => el.removeEventListener("scroll", updateScrollButtons);
+  }, []);
 
   const scroll = (direction) => {
     if (scrollRef.current) {
@@ -18,8 +36,11 @@ export function ActivitySection() {
         left: direction === "left" ? -200 : 200,
         behavior: "smooth",
       });
+
+      setTimeout(updateScrollButtons, 200);
     }
   };
+
 
   return (
     <div className="mt-10 flex justify-center">
@@ -28,11 +49,11 @@ export function ActivitySection() {
 
         <div className="w-full h-[177px] flex flex-col gap-[10px] relative">
           {/* Scrollable Activity Tiles */}
-          <div className="relative">
+          <div className="relative ">
             {/* Scrollable content */}
             <div
               ref={scrollRef}
-              className="flex gap-3 overflow-x-auto px-2 pb-2 scrollbar-hide scroll-smooth"
+              className="flex gap-3 overflow-x-hidden px-2 pb-2 scrollbar-hide scroll-smooth"
               style={{ scrollSnapType: "x mandatory" }}
             >
               {activities.map((item, i) => (
@@ -56,27 +77,32 @@ export function ActivitySection() {
               ))}
             </div>
 
-            {/* Left Fade */}
-            <div className="absolute top-0 left-0 h-full w-32 bg-gradient-to-r from-white to-transparent pointer-events-none rounded-l-xl" />
 
             {/* Right Fade */}
-            <div className="absolute top-0 right-0 h-full w-32 bg-gradient-to-l from-white to-transparent pointer-events-none rounded-r-xl" />
 
             {/* Left Button */}
-            <button
-              className="absolute left-[0px] top-[40%] border border-[#F1F1F1] transform -translate-y-1/2 bg-white rounded-full shadow-md w-8 h-8 flex items-center justify-center z-10"
-              onClick={() => scroll("left")}
-            >
-              <FiChevronLeft className="text-[#91908F] " />
-            </button>
+            {canScrollLeft && (
 
-            {/* Right Button */}
-            <button
-              className="absolute right-[0px] top-[40%] border border-[#F1F1F1]  transform -translate-y-1/2 bg-white rounded-full shadow-md w-8 h-8 flex items-center justify-center z-10"
-              onClick={() => scroll("right")}
-            >
-              <FiChevronRight className="text-[#91908F] " />
-            </button>
+              <button
+                className="absolute left-[0px] top-[40%] border border-[#F1F1F1] transform -translate-y-1/2 bg-white rounded-full shadow-md w-8 h-8 flex items-center justify-center z-10"
+                onClick={() => scroll("left")}
+              >
+                <FiChevronLeft className="text-[#91908F]" />
+              </button>
+            )}
+            {canScrollRight && (
+              <div className="absolute top-0 right-0 h-full w-32 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
+            )}
+
+            {canScrollRight && (
+
+              <button
+                className="absolute right-[0px] top-[40%] border border-[#F1F1F1] transform -translate-y-1/2 bg-white rounded-full shadow-md w-8 h-8 flex items-center justify-center z-10"
+                onClick={() => scroll("right")}
+              >
+                <FiChevronRight className="text-[#91908F]" />
+              </button>
+            )}
           </div>
 
         </div>
