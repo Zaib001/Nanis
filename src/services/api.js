@@ -28,7 +28,11 @@ const request = async (endpoint, method = "GET", data = null) => {
 export const loginUser = (payload) => request("/auth/login", "POST", payload);
 export const registerUser = (payload) =>
   request("/auth/signup", "POST", payload);
-export const loginGoogle = () => window.open(`${BASE_URL}/auth/google`, "_self");
+export const checkEmail = (payload) =>
+  request("/auth/check-email", "POST", payload);
+export const loginGoogle = () =>
+  window.open(`${BASE_URL}/auth/google`, "_self");
+export const getUser = () => request("/auth/get-user");
 export const loginMicrosoft = () => request("/auth/microsoft", "GET");
 export const loginApple = () => request("/auth/apple", "GET");
 export const requestPasswordReset = (payload) =>

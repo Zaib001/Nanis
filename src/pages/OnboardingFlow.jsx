@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { updateUserProfile, uploadProfilePic } from "../services/api";
@@ -8,7 +8,9 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import school from "../assets/teacher.svg";
 import personal from "../assets/profile.svg";
 import team from "../assets/buildings-2.svg";
-import placeholder from "../assets/placeholder.svg";
+import placeholder from "../assets/placeholder.png";
+import addPhoto from "../assets/add_photo.svg";
+import { useAuth } from "../providers/AuthProvider";
 
 export default function OnboardingFlow() {
   const [step, setStep] = useState(1);
@@ -17,7 +19,18 @@ export default function OnboardingFlow() {
   const [showPassword, setShowPassword] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
   const [password, setPassword] = useState(null);
+  const [pError, setPError] = useState("");
+  const [nError, setNError] = useState("");
+  const {setUser} = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+  if(fullName)
+    setNError("")
+  if(password)
+    setPError("")
+
+},[password,fullName])
 
   const useCases = [
     {
@@ -57,19 +70,38 @@ export default function OnboardingFlow() {
         await uploadProfilePic({ profilePic: base64 });
         toast.success("Picture Uploaded Successfully");
       } catch (error) {
-        toast.error("Image Upload Error:",error.message)
+        toast.error("Image Upload Error:", error.message);
         console.error("Upload error:", error);
       }
     };
     reader.readAsDataURL(file);
   };
+
   const handleSubmit = async () => {
+    if (!fullName && !password) {
+      setNError("This field is required");
+      setPError("This field is required");
+      return;
+    }
+
+    if (!password) {
+      setPError("This field is required");
+      return;
+    }
+    if (password.length < 8) {
+      setPError("p");
+      return;
+    }
+    if (!fullName) {
+      setNError("This field is required");
+      return;
+    }
     try {
       await updateUserProfile({
         name: fullName,
-        preference: selectedUseCase,
         password,
       });
+      setUser(null)
       navigate("/dashboard");
     } catch (error) {
       toast.error(error.message || "Could not enter data");
@@ -81,14 +113,17 @@ export default function OnboardingFlow() {
       <Header />
 
       {step === 1 && (
-        <div className="w-[302px] h-[378px] flex flex-col items-center">
-          <h1 className="text-[34px] leading-[42px] md:text-[32px] font-bold text-center">
-            Welcome to Nanis
-          </h1>
-          <p className="text-[12.5px] leading-[16px] text-[#636361] text-center mb-4">
-            Start by sharing a few details about yourself
-          </p>
-          <div className="flex flex-col items-center gap-2 mb-6">
+        <div className="w-[370px] h-[378px] flex flex-col items-center">
+          <div className="text-center  font-semibold mb-5">
+            <h1 className="text-[23px]" mb-5>
+              Create a profile
+            </h1>
+            <h1 className="text-[23px] text-[#ACAAA7]   ">
+              This is how you’ll appear in Nanis
+            </h1>
+          </div>
+
+          <div className="flex flex-col items-center gap-2 mb-6 font-semibold">
             <label htmlFor="profile-upload" className="cursor-pointer">
               <div className="w-12 h-12 bg-[#EDEDEB] rounded-full flex items-center justify-center overflow-hidden">
                 {profilePic ? (
@@ -113,11 +148,16 @@ export default function OnboardingFlow() {
               className="hidden"
               onChange={handleImageChange}
             />
-            <span className="text-xs text-[#91918E]">Add a profile</span>
+            <span className="text-xs text-[#91918E] flex gap-1 font-semibold items-center">
+              <span>
+                <img src={addPhoto} className="w-[12px] h-[12px]" alt="" />
+              </span>
+              Add a profile
+            </span>
           </div>
 
-          <div className="w-full mb-4">
-            <label className="block text-sm text-left text-[#91918E] mb-1">
+          <div className="w-full mb-2">
+            <label className="block text-sm font-medium text-left text-[#91918E] mb-1">
               What should we call you?
             </label>
             <input
@@ -125,19 +165,34 @@ export default function OnboardingFlow() {
               placeholder="e.g. Daniel, Thomas"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-[302px] h-[36px] border border-[#D9D9D6] rounded-md px-[8px] py-[6px] text-sm focus:outline-none"
+              className={`w-full h-[36px] border  rounded-md px-[8px] py-[6px] text-sm pr-10 focus:outline-none
+  ${nError
+                  ? "border-[1.5px] border-[#F1511B] shadow-[0_0_0_4px_rgba(241,81,27,0.2)] text-[#F1511B]"
+                  : " border-[#D9D9D6] "
+                }
+`}
             />
+            {nError && (
+              <p className="text-[#F1511B] text-xs mt-1">
+                This field is required
+              </p>
+            )}
           </div>
 
           <div className="w-full relative">
-            <label className="block text-sm text-left text-[#91918E] mb-1">
+            <label className="block text-sm text-left font-medium text-[#91918E] mb-1">
               Set a secure password
             </label>
 
             <input
               type={showPassword ? "text" : "password"}
               placeholder="New password"
-              className="w-[302px] h-[36px] border border-[#D9D9D6] rounded-md px-[8px] py-[6px] text-sm pr-10 focus:outline-none"
+              className={`w-full h-[36px] border  rounded-md px-[8px] py-[6px] text-sm pr-10 focus:outline-none
+  ${pError
+                  ? "border-[1.5px] border-[#F1511B] shadow-[0_0_0_4px_rgba(241,81,27,0.2)] text-[#F1511B]"
+                  : " border-[#D9D9D6] "
+                }
+`}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -149,16 +204,22 @@ export default function OnboardingFlow() {
             >
               {showPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
             </button>
+            {pError && pError !== "p" && (
+              <p className="text-[#F1511B] text-xs mt-1">
+                This field is required
+              </p>
+            )}
 
-            <p className="text-[10px] text-left text-[#91918E] mt-1">
-              Minimum 8 characters
-            </p>
+            {pError === "p" && (
+              <p className="text-[12px] font-medium text-left text-[#91918E] mt-1">
+                Enter at least 8 characters for security
+              </p>
+            )}
           </div>
 
           <button
-            onClick={() => setStep(2)}
-            disabled={!fullName.trim()}
-            className="w-[302px] h-[36px] mt-6 bg-[#888870] text-white rounded-md py-2 text-sm font-medium"
+            onClick={handleSubmit}
+            className="w-full h-[36px] mt-3 bg-[#888870] text-white rounded-md py-2 text-sm font-medium"
           >
             Continue
           </button>

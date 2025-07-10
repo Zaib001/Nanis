@@ -31,16 +31,19 @@ export default function ForgotPasswordPage() {
     <>
       <Header />
       <div className="min-h-screen bg-[#FAFAF9] font-inter text-[#37352F] flex items-center justify-center">
+
         <div className="w-[302px] flex flex-col justify-between text-center space-y-5">
-          <h1 className="text-[34px] leading-[42px] mb-4 font-bold">
-            {step === 1 || step === 2
-              ? "Log in"
-              : step === 3
-                ? "New Password"
-                : ""}
-          </h1>
+          <div className="">
+            <h1 className="text-[23px] text-start leading-[42px] font-bold">
+              Your AI workspace.
+            </h1>
+            <h1 className="text-[23px] text-[#ACAAA7] -mt-3 text-start leading-[42px] font-bold">
+              Get started with Nanis
+            </h1>
+          </div>
 
 
+          
           {step === 1 && (
             <div className="text-left relative">
               <label className="text-sm font-medium block mb-1 text-[#91918E]">Email address</label>

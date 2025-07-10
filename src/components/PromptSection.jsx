@@ -8,8 +8,10 @@ import send from "../assets/Submit AI.svg";
 import { FiChevronDown } from "react-icons/fi";
 import AllSourcesDropdown from "./AllSourcesDropdown";
 import AskDropdown from "./AskDropdown";
+import { useAuth } from "../providers/AuthProvider";
 
 export function PromptSection({ prompt, setPrompt, onSend, showHeading = true, showLoadPrompt = true, }) {
+  const {user} = useAuth()
   return (
     <div className="w-full px-4 sm:px-[50px] flex justify-center items-center">
       <div className="w-full max-w-[756px] font-inter">
@@ -18,7 +20,7 @@ export function PromptSection({ prompt, setPrompt, onSend, showHeading = true, s
           <div className="flex justify-center items-center mb-4 gap-2">
             <img src={promptIcon} alt="Prompt Icon" className="w-7 h-7" />
             <h1 className="text-[24px] leading-[70px] font-semibold text-[#1C1C1C] -tracking-normal">
-              Good evening, Sinan Ouriach
+              Good evening, {user?.name}
             </h1>
           </div>
         )}
