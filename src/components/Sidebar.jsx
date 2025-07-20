@@ -120,7 +120,7 @@ export default function Sidebar() {
           >
             <img src={icon} alt="logo" className="w-[20px] h-[20px]" />
             <span className="text-[#32302C] font-normal tracking-[-0.04em]">
-              {user?.name?.split(" ")[0]}’s Nanis
+              {user?.name && user?.name?.split(" ")[0]}’s Nanis
             </span>
             {showAccountDropdown ? (
               <FaChevronUp className="text-gray-400 text-xs" />
@@ -152,7 +152,7 @@ export default function Sidebar() {
                     )}
                     <div>
                       <p className="text-sm font-semibold text-[#232323]">
-                        {user?.name.split(" ")[0]}’s Nanis
+                        {user?.name?.split(" ")[0]}’s Nanis
                       </p>
                       <p className="text-xs text-[#888870]">
                         Trial Plan · 1 member
@@ -199,7 +199,7 @@ export default function Sidebar() {
                         L
                       </div>
                       <Link to="/home">
-                        {user?.name.split(" ")[0]}’s Notion
+                        {user?.name?.split(" ")[0]}’s Notion
                       </Link>
                     </div>
                     <span className="text-xl text-[#3390ED]">✓</span>
@@ -219,7 +219,7 @@ export default function Sidebar() {
                   <button
                     onClick={() => {
                       setShowAccountDropdown(false);
-                      window.location.href = "/login";
+                      window.location.href = "/auth";
                       localStorage.clear();
                       sessionStorage.clear();
                       document.cookie.split(";").forEach((cookie) => {

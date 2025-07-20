@@ -5,6 +5,7 @@ import { updateUserProfile, uploadProfilePic } from "../services/api";
 import { FaCheckCircle } from "react-icons/fa";
 import Header from "../components/Header";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import eye from "../assets/eye.svg"
 import school from "../assets/teacher.svg";
 import personal from "../assets/profile.svg";
 import team from "../assets/buildings-2.svg";
@@ -17,20 +18,23 @@ export default function OnboardingFlow() {
   const [fullName, setFullName] = useState("");
   const [selectedUseCase, setSelectedUseCase] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [profilePic, setProfilePic] = useState(null);
-  const [password, setPassword] = useState(null);
-  const [pError, setPError] = useState("");
+  const [profilePic, setProfilePic] = useState("");
+  const [password, setPassword] = useState("");
+  const [pError, setPError] = useState({ message: "", type: "" });
   const [nError, setNError] = useState("");
-  const {setUser} = useAuth();
+  const { setUser } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-  if(fullName)
-    setNError("")
-  if(password)
-    setPError("")
+    if (fullName) setNError("");
+    if (password) setPError("");
 
-},[password,fullName])
+    if (password.length < 8)
+      setPError({
+        message: "Enter at least 8 characters for security",
+        type: "light",
+      });
+  }, [password, fullName]);
 
   const useCases = [
     {
@@ -80,7 +84,7 @@ export default function OnboardingFlow() {
   const handleSubmit = async () => {
     if (!fullName && !password) {
       setNError("This field is required");
-      setPError("This field is required");
+      setPError({message:"This field is required",type:"scary"});
       return;
     }
 
@@ -101,7 +105,7 @@ export default function OnboardingFlow() {
         name: fullName,
         password,
       });
-      setUser(null)
+      setUser(null);
       navigate("/dashboard");
     } catch (error) {
       toast.error(error.message || "Could not enter data");
@@ -187,10 +191,12 @@ export default function OnboardingFlow() {
             <input
               type={showPassword ? "text" : "password"}
               placeholder="New password"
-              className={`w-full h-[36px] border  rounded-md px-[8px] py-[6px] text-sm pr-10 focus:outline-none
-  ${pError
+              className={`w-full h-[36px] border  rounded-[8px] px-[8px] py-[6px] text-sm pr-10 focus:outline-none
+  ${pError.type === "scary"
                   ? "border-[1.5px] border-[#F1511B] shadow-[0_0_0_4px_rgba(241,81,27,0.2)] text-[#F1511B]"
-                  : " border-[#D9D9D6] "
+                  : pError.type === "light"
+                    ? "border-[1.5px] border-[#AD9669] "
+                    : " border-[#D9D9D6] "
                 }
 `}
               value={password}
@@ -202,17 +208,13 @@ export default function OnboardingFlow() {
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-2 top-[43px] transform -translate-y-1/2 text-[#91918E]"
             >
-              {showPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+              {showPassword ? <FaEyeSlash size={13} /> : <img src={eye} width={13.34}/>}
             </button>
-            {pError && pError !== "p" && (
-              <p className="text-[#F1511B] text-xs mt-1">
-                This field is required
-              </p>
-            )}
-
-            {pError === "p" && (
-              <p className="text-[12px] font-medium text-left text-[#91918E] mt-1">
-                Enter at least 8 characters for security
+            {pError.message && (
+              <p
+                className={`text-[12px] font-medium text-left  mt-1 ${pError.type === "light" ? "text-[#91918E]" : "text-[#F1511B]"}`}
+              >
+                {pError.message}
               </p>
             )}
           </div>

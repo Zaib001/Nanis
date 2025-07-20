@@ -43,6 +43,7 @@ export const verifySignupOtp = (payload) =>
   request("/auth/verify-otp", "POST", payload);
 export const resendOtp = (payload) =>
   request("/auth/resend-otp", "POST", payload);
+export const verifyForgotPasswordOtp = (payload) => request("/auth/verify-otp-forgot-password","POST",payload);
 
 export const updateUserProfile = (payload) =>
   request("/user/update", "POST", payload);

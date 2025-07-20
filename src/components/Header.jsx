@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import logo from '../assets/Variant3.svg'
+import globe from "../assets/globe.svg"
 
 export default function Header() {
     const [open, setOpen] = useState(false);
@@ -14,18 +15,19 @@ export default function Header() {
     };
 
     return (
-        <header className="absolute top-0 left-0 w-full h-[114px] px-[50px] pt-10 pb-10 flex items-center justify-between z-50 bg-[#FAFAF9]">
+        <header className="absolute top-0 left-0 w-full h-[114px] px-[30px] pt-[18px] pb-10 flex items-center justify-between z-50 bg-[#FAFAF9]">
             {/* Logo */}
-            <img src={logo} alt="Logo" className="h-[33.62px] w-[121px] object-contain" />
+            <img src={logo} alt="Logo" className="h-[33.62px] w-[100.04px] object-contain" />
 
 
             {/* Language Dropdown */}
             <div className="relative">
                 <button
                     onClick={toggleDropdown}
-                    className="flex items-center gap-1 cursor-pointer text-sm text-[#37352F]"
+                    className="flex font-inter text-[#91918E]  font-medium items-center gap-[8.2px] cursor-pointer text-sm "
                 >
-                    {language}
+                <img src={globe} className="w-[15.42px] pt-[.5px]" alt="" />
+                    {language+ " (US)"}
                     {open ? <FiChevronUp className="text-base" /> : <FiChevronDown className="text-base" />}
                 </button>
 

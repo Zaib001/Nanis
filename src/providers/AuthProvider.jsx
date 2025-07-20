@@ -8,9 +8,10 @@ export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
   const login = async ({ email, password }) => {
-    const user = await loginUser({ email, password });
+    const res = await loginUser({ email, password });
     console.log(user);
-    setUser(user.user);
+    setUser(res.user);
+    return res;
   };
   
   const getUserState = async () => {
@@ -26,7 +27,7 @@ export default function AuthProvider({ children }) {
   }, [user]);
 
   const logout = () => {
-    window.location.href = "/login";
+    window.location.href = "/auth";
     localStorage.clear();
     sessionStorage.clear();
     document.cookie.split(";").forEach((cookie) => {
