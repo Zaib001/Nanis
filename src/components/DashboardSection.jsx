@@ -3,19 +3,21 @@ import AnswersSection from "./AnswersSection";
 import { ActivitySection } from "./ActivitySection";
 import TasksSection from "./TasksSection";
 import DashboardHeader from "./DashboardHeader";
+import DashboardPopup from "../pages/DashboardPopup";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createConversation } from "../services/api";
-import {PromptSection} from './PromptSection';
+import { PromptSection } from "./PromptSection";
 
 export default function DashboardSection() {
   const [prompt, setPrompt] = useState("");
+  const [showPopup, setShowPopup] = useState(true);
   const navigate = useNavigate();
 
   const handleSend = async () => {
     if (!prompt.trim()) return;
     const data = await createConversation();
-    console.log({data})
+    console.log({ data });
 
     navigate(`/chat/${data.conversationId}?q=${encodeURIComponent(prompt)}`);
   };
@@ -30,13 +32,13 @@ export default function DashboardSection() {
             setPrompt={setPrompt}
             onSend={handleSend}
           />{" "}
-
           <ActivitySection />
           <MeetingsSection />
           <AnswersSection />
           <TasksSection />
         </div>
       </div>
+      {showPopup && <DashboardPopup setShowPopup={setShowPopup} />}
     </>
   );
 }

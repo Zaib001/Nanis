@@ -7,19 +7,19 @@ import Microsoft from "../assets/logos_microsoft-icon.svg";
 import FiX from "../assets/close-circle.svg";
 import { FaEyeSlash } from "react-icons/fa";
 import eye from "../assets/eye.svg";
+import eyeClose from "../assets/eye-close.svg";
 
 import {
   checkEmail,
   loginApple,
   loginGoogle,
   loginMicrosoft,
-  registerUser,
   resendOtp,
   resetPassword,
   verifyForgotPasswordOtp,
   verifySignupOtp,
 } from "../services/api";
-import Tick from "../assets/Tick.jpg";
+import Tick from "../assets/tick.svg";
 
 import Header from "../components/Header";
 import { useAuth } from "../providers/AuthProvider";
@@ -44,19 +44,19 @@ const Spinner = () => {
 
 const PasswordUpdated = ({ setStep }) => {
   return (
-    <div className="bg-white rounded-2xl   font-inter flex flex-col items-center  mx-auto text-center ">
-      <img src={Tick} alt="" className="" />
+    <div className="bg-transparent rounded-2xl w-[311px] font-inter flex flex-col items-center  mx-auto text-center ">
+      <img src={Tick} alt="" className="mb-[20px]" />
       <div className="flex flex-col">
-        <h1 className=" text-[32px] text-[#32302C] mb-1 font-bold">
+        <h1 className=" text-[34px] leading-[42px] text-[#32302C] mb-[10px] font-bold">
           Password updated
         </h1>
-        <p className="text-[12px] text-[#91918E]">
+        <p className="text-[12px] leading-[16px] mb-[20px] text-[#91918E]">
           You’re all set! Use your new password to access Nanis
         </p>
       </div>
       <button
         onClick={() => setStep("login-password")}
-        className=" text-[#888870] text-[12px] px-6 py-3 rounded-lg text-base font-medium hover:opacity-90 transition"
+        className=" text-[#888870] w-full bg-[#8888701A] text-[12px] leading-[15px] px-6 py-[8px] rounded-lg  font-medium hover:opacity-90 transition"
       >
         Go to login
       </button>
@@ -86,6 +86,7 @@ export default function AuthPage() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
 
   const [step, setStep] = useState("check-email");
 
@@ -108,11 +109,18 @@ export default function AuthPage() {
   console.log({ resetToken });
 
   useEffect(() => {
+    if (
+      step === "login-password" &&
+      error.field === "password" &&
+      error.type === "scary" &&
+      password !== ""
+    )
+      setError({ message: "", field: "", type: "" });
     if (step !== "set-new-password") return;
 
     if (
-      password.length === 8 &&
-      confirmPassword.length === 8 &&
+      password.length > 7 &&
+      confirmPassword.length > 7 &&
       password !== confirmPassword
     ) {
       setError({
@@ -136,23 +144,24 @@ export default function AuthPage() {
     )
       return;
 
-    if (password.length < 8)
+    if (password.length < 8) {
       setError({
         field: "password",
         message: "Enter at least 8 characters for security",
         type: "light",
       });
-    else setError({ field: "", message: "" });
-
-    if (confirmPassword.length < 8)
       setConfirmPasswordError({
-        message: "Enter at least 8 characters for security",
+        message: "",
         type: "light",
       });
-    else setConfirmPasswordError({ field: "", message: "" });
+    } else {
+      setConfirmPasswordError({ field: "", message: "" });
+      setError({ field: "", message: "" });
+    }
   }, [password, confirmPassword]);
 
   const handleResendOtp = async () => {
+    setResendLoading(true);
     if (!email.includes("@")) {
       setError({ field: "email", message: "Please enter a valid email." });
       return;
@@ -162,21 +171,22 @@ export default function AuthPage() {
       setResent(true);
     } catch (error) {
       console.log(error);
+    } finally {
+      setResendLoading(false);
     }
   };
 
   const handleEmailSubmit = async () => {
-    setError({ field: "", message: "", type: "" });
-    setConfirmPasswordError({ message: "", type: "" });
     setLoading(true);
-    setPassword("");
-    setConfirmPassword("")
+
     switch (step) {
       case "check-email":
         try {
+          if (!email) throw new Error("This field is required");
           if (!isValidEmail(email)) throw new Error("Email doesn't exist");
           const res = await checkEmail({ email });
           console.log({ res });
+          if (res.step === "signup-otp") setResent(true);
           setStep(res.step);
         } catch (error) {
           setError({
@@ -190,6 +200,7 @@ export default function AuthPage() {
       case "signup-otp":
         try {
           await verifySignupOtp({ email, otp: code });
+          setCode("");
           navigate("/onboarding");
         } catch (error) {
           console.log(error);
@@ -206,7 +217,10 @@ export default function AuthPage() {
         try {
           const res = await login({ email, password });
           if (res.user.step === "dashboard") navigate("/dashboard");
-          else setStep(res.user.step);
+          else {
+            setResent(true);
+            setStep(res.user.step);
+          }
           console.log({ res });
         } catch (error) {
           setError({
@@ -215,6 +229,7 @@ export default function AuthPage() {
             type: "scary",
           });
         } finally {
+          setPassword("");
           setLoading(false);
         }
 
@@ -223,6 +238,7 @@ export default function AuthPage() {
         try {
           await verifySignupOtp({ email, otp: code, isLogin: true });
           navigate("/dashboard");
+          setCode("");
         } catch (error) {
           setError({ field: "code", message: error.message });
         } finally {
@@ -237,6 +253,7 @@ export default function AuthPage() {
           setResetToken(res.resetPasswordToken);
           console.log({ res });
           setStep("set-new-password");
+          setCode("");
         } catch (error) {
           setError({
             field: "code",
@@ -249,14 +266,19 @@ export default function AuthPage() {
         break;
       case "set-new-password":
         try {
+          if (error.field === "password" || confirmPasswordError.message)
+            return;
           await resetPassword({ token: resetToken, newPassword: password });
           setStep("password-reset-successful");
         } catch (error) {
           setError({
-            field: "code",
-            message: error.message || "OTP verification failed!",
+            field: "password",
+            message: error.message || "Password reset error",
+            type: "scary",
           });
         } finally {
+          setPassword("");
+          setConfirmPassword("");
           setLoading(false);
         }
 
@@ -353,7 +375,7 @@ export default function AuthPage() {
               </h1>
             </div>
             {/* Email input */}
-            <div className="flex flex-col gap-5 mt-[12px]">
+            <div className="flex flex-col gap-[10px] mt-[12px]">
               <div className=" flex flex-col gap-[6px]">
                 {(step === "check-email" ||
                   step === "login-password" ||
@@ -373,7 +395,7 @@ export default function AuthPage() {
                         placeholder="Enter your personal or company email address"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className={`w-[350px] placeholder:font-medium outline-none placeholder:text-xs border-[1px] border-[#EBEAE7] px-2 py-[6px] h-[36px] rounded-[8px] text-sm pr-9
+                        className={`w-[350px] placeholder:font-medium outline-none placeholder:text-xs border-[1px] border-[#EBEAE7] px-[14px] py-[6px] h-[36px] rounded-[8px] text-sm pr-9
   ${error.field === "email"
                             ? "border-[1.5px] border-[#F1511B] shadow-[0_0_0_4px_rgba(241,81,27,0.2)] text-[#F1511B]"
                             : ` border-[#D9D9D6] ${step === "check-email" ? "text-black" : "text-gray-500"}`
@@ -394,7 +416,7 @@ export default function AuthPage() {
                               setEmail("");
                             }
                           }}
-                          className="absolute right-2 top-[38px] transform -translate-y-1/2 text-[#4B4B4B]"
+                          className="absolute right-[8px] top-[38px] transform -translate-y-1/2 text-[#4B4B4B]"
                         >
                           <img
                             src={FiX}
@@ -408,22 +430,22 @@ export default function AuthPage() {
                 {(step === "signup-otp" ||
                   step === "verify-login-otp" ||
                   step === "verify-forgot-otp") && (
-                    <div className="w-full font-inter">
+                    <div className="w-full font-inter mt-[6px]  relative">
                       {step === "verify-forgot-otp" ||
                         step === "set-new-password" ? (
-                        <>
-                          <p className="text-[12px] font-medium relative text-left text-[#91918E] leading-[15px] mb-1">
+                        <div className="overflow-visible">
+                          <p className="text-[12px] font-medium w-[150%]  text-left text-[#91918E] leading-[15px] mb-[6px]">
                             A temporary code has been sent to{" "}
-                            <span className="font-bold text-[#888870] absolute -right-9">
+                            <span className="font-bold text-[#888870] ">
                               {email}
                             </span>
                           </p>
-                          <p className="text-[12px] font-medium text-left text-[#91918E] leading-[15px] mb-1">
+                          <p className="text-[12px] font-medium text-left text-[#91918E] leading-[15px] mb-[6px]">
                             Enter it below to continue{" "}
                           </p>
-                        </>
+                        </div>
                       ) : (
-                        <p className="text-[12px] font-medium text-left text-[#91918E] leading-[15px] mb-1">
+                        <p className="text-[12px] font-medium text-left text-[#91918E] leading-[15px] mb-[6px]">
                           We've sent a temporary sign-up code to your inbox Please
                           enter it below
                         </p>
@@ -444,9 +466,9 @@ export default function AuthPage() {
                         onChange={(e) =>
                           setCode(e.target.value.replace(/[^0-9]/g, ""))
                         }
-                        className={`w-[350px] tracking-[0.5em] placeholder:tracking-normal mt-1 placeholder:text-[#B3B2B0] placeholder:text-[14px] outline-none px-2 py-[6px] h-[36px] rounded-[8px] text-sm pr-9
+                        className={`w-[350px] border-[1px] border-[#EBEAE7] tracking-[.26rem] placeholder:tracking-normal  placeholder:text-[#B3B2B0] placeholder:text-[14px] outline-none px-2 py-[8px] h-[36px] rounded-[8px] text-sm pr-9
   ${error.field === "code"
-                            ? "border-[1.5px] border-[#F1511B] shadow-[0_0_0_4px_rgba(241,81,27,0.2)] text-[#F1511B]"
+                            ? "border-[1.5px] border-[#F1511B] shadow-[0_0_0_4px_rgba(173,150,105,0.2)] text-[#F1511B]"
                             : " border-[#D9D9D6] text-black"
                           }`}
                       />
@@ -475,17 +497,17 @@ export default function AuthPage() {
                         placeholder="Enter your password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className={`w-[350px] outline-none px-2 py-[6px] h-[36px] rounded-[8px] text-sm pr-9
+                        className={`w-[350px] outline-none placeholder:text-[14px] placeholder:font-medium placeholder:text-[#B3B2B0] px-2 py-[8px] border-[1px]  h-[36px] rounded-[8px] text-sm pr-9
   ${error?.field === "password" && error?.type === "scary"
-                            ? "border-[1.5px] border-[#F1511B] shadow-[0_0_0_4px_rgba(241,81,27,0.2)] text-[#F1511B]"
+                            ? "border-[1px] border-[#F1511B] shadow-[0_0_0_4px_rgba(173,150,105,0.2)] text-[#F1511B]"
                             : error.field === "password" && error.type === "light"
-                              ? "border-[1.5px] border-[#AD9669] "
-                              : " border-[#D9D9D6] text-black"
+                              ? "border-[1px] border-[#AD9669] shadow-[0_0_0_4px_rgba(173,150,105,0.2)]"
+                              : " border-[#EBEAE7] text-black"
                           }`}
                       />
                       {error?.field === "password" && (
                         <p
-                          className={`text-[12px] font-medium mb-[10px] text-left  mt-1 ${error?.type === "light" ? "text-[#91918E]" : "text-[#F1511B]"}`}
+                          className={`text-[12px] font-medium  text-left  mt-[2px] ${error?.type === "light" ? "text-[#91918E]" : "text-[#F1511B]"}`}
                         >
                           {error?.message}
                         </p>
@@ -493,10 +515,10 @@ export default function AuthPage() {
                       <button
                         onClick={() => setShowPassword(!showPassword)}
                         type="button"
-                        className="absolute right-2 top-[43px] transform -translate-y-1/2 text-[#4B4B4B]"
+                        className="absolute right-[9.33px] top-[42px] transform -translate-y-1/2 text-[#4B4B4B]"
                       >
                         {showPassword ? (
-                          <FaEyeSlash size={13} />
+                          <img src={eyeClose} className="w-[13.34px]" />
                         ) : (
                           <img src={eye} className="w-[13.34px]" />
                         )}
@@ -516,17 +538,17 @@ export default function AuthPage() {
                           placeholder="Verify your password"
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
-                          className={`w-[350px] outline-none px-2 py-[6px] h-[36px] rounded-[8px] text-sm pr-9
+                          className={`w-[350px] outline-none placeholder:text-[14px] placeholder:font-medium placeholder:text-[#B3B2B0] px-2 border-[1px]  py-[6px] h-[36px] rounded-[8px] text-sm pr-9
   ${confirmPasswordError?.message && confirmPasswordError?.type === "scary"
-                              ? "border-[1.5px] border-[#F1511B] shadow-[0_0_0_4px_rgba(241,81,27,0.2)] text-[#F1511B]"
-                              : confirmPasswordError?.message && confirmPasswordError?.type === "light"
-                                ? "border-[1.5px] border-[#AD9669] "
-                                : " border-[#D9D9D6] text-black"
+                              ? "border-[1px] border-[#F1511B] shadow-[0_0_0_4px_rgba(173,150,105,0.2)] text-[#F1511B]"
+                              : confirmPasswordError?.type === "light"
+                                ? "border-[1px] border-[#AD9669] shadow-[0_0_0_4px_rgba(173,150,105,0.2)]"
+                                : " border-[#EBEAE7] text-black"
                             }`}
                         />
                         {confirmPasswordError?.message && (
                           <p
-                            className={`text-[12px] font-medium mb-[10px] text-left  mt-1 ${confirmPasswordError?.type === "light" ? "text-[#91918E]" : "text-[#F1511B]"}`}
+                            className={`text-[12px] font-medium  text-left  mt-[2px] ${confirmPasswordError?.type === "light" ? "text-[#91918E]" : "text-[#F1511B]"}`}
                           >
                             {confirmPasswordError?.message}
                           </p>
@@ -536,10 +558,10 @@ export default function AuthPage() {
                             setShowConfirmPassword(!showConfirmPassword)
                           }
                           type="button"
-                          className="absolute right-2 top-[43px] transform -translate-y-1/2 text-[#4B4B4B]"
+                          className="absolute right-[9.33px] top-[42px] transform -translate-y-1/2 text-[#4B4B4B]"
                         >
                           {showConfirmPassword ? (
-                            <FaEyeSlash size={13} />
+                            <img src={eyeClose} className="w-[13.34px]" />
                           ) : (
                             <img src={eye} className="w-[13.34px]" />
                           )}
@@ -550,7 +572,9 @@ export default function AuthPage() {
                 )}
                 <div className="flex flex-col gap-[10px] mt-1">
                   <button
-                    disabled={loading}
+                    disabled={
+                      loading || error.message || confirmPasswordError.message
+                    }
                     onClick={handleEmailSubmit}
                     className="w-[350px] h-[36px] bg-[#888870] relative flex justify-center items-center gap-[4px]   font-[450] p-[10px] rounded-[8px]  text-[14px] leading-[100%]"
                   >
@@ -571,7 +595,7 @@ export default function AuthPage() {
                     step === "verify-login-otp" ||
                     step === "verify-forgot-otp") && (
                       <button
-                        disabled={resent}
+                        disabled={resendLoading || resent}
                         onClick={handleResendOtp}
                         className="w-[350px] h-[36px] disabled:bg-transparent bg-[#8888701A] text-[#888870] font-medium p-[10px] rounded-[8px] gap-[10px] text-[12px] leading-[100%]"
                       >
@@ -585,16 +609,17 @@ export default function AuthPage() {
                   <button
                     onClick={async () => {
                       setLoading(true);
+                      setCode("");
                       await handleResendOtp();
                       setStep("verify-forgot-otp");
                       setLoading(false);
                     }}
-                    className="text-xs text-[#91918E] underline text-center"
+                    className="text-xs mt-[4px] font-medium text-[#91918E] underline text-center"
                   >
                     Forgot password?
                   </button>
                 )}
-                <p className="text-xs text-[#999]">
+                <p className="text-[12px] text-[#91918E]  mt-[3px]">
                   By clicking continue you are agreed to our
                   <br />
                   <span className="underline">Terms of Service</span> and{" "}
@@ -602,7 +627,7 @@ export default function AuthPage() {
                 </p>
               </div>
             </div>
-            <div className="border-t-[1px] w-full border-[#EBEAE7] my-7"></div>
+            <div className="border-t-[1px] w-full border-[#EBEAE7] my-[20px]"></div>
             {/* Social buttons */}
             <div className="space-y-2 w-[350px] ">
               <button
@@ -637,6 +662,8 @@ export default function AuthPage() {
               (step === "set-new-password" && (
                 <button
                   onClick={() => {
+                    setError({ message: "", field: "", type: "" });
+                    setConfirmPasswordError({ message: "", type: "" });
                     setStep("login-password");
                     setPassword("");
                   }}
