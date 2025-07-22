@@ -117,7 +117,6 @@ export default function AuthPage() {
     )
       setError({ message: "", field: "", type: "" });
     if (step !== "set-new-password") return;
-
     if (
       password.length > 7 &&
       confirmPassword.length > 7 &&
@@ -139,10 +138,18 @@ export default function AuthPage() {
 
     if (
       step === "set-new-password" &&
-      error.type === "scary" &&
-      password.length === 0
+      (error.type === "scary" || error.type === "super-scary") &&
+      password.length === 0 &&
+      confirmPassword.length === 0
     )
       return;
+
+    if (confirmPassword.length < 8)
+      setConfirmPasswordError({
+        message: "",
+        type: "light",
+      });
+    else setConfirmPasswordError({ message: "", type: "" });
 
     if (password.length < 8) {
       setError({
@@ -155,20 +162,22 @@ export default function AuthPage() {
         type: "light",
       });
     } else {
-      setConfirmPasswordError({ field: "", message: "" });
+      if (confirmPassword.length > 7)
+        setConfirmPasswordError({ message: "", type: "" });
+
       setError({ field: "", message: "" });
     }
   }, [password, confirmPassword]);
 
   const handleResendOtp = async () => {
     setResendLoading(true);
+    setResent(true);
     if (!email.includes("@")) {
       setError({ field: "email", message: "Please enter a valid email." });
       return;
     }
     try {
       await resendOtp({ email });
-      setResent(true);
     } catch (error) {
       console.log(error);
     } finally {
@@ -201,7 +210,7 @@ export default function AuthPage() {
         try {
           await verifySignupOtp({ email, otp: code });
           setCode("");
-          navigate("/onboarding");
+          navigate("/onboarding?provider=local");
         } catch (error) {
           console.log(error);
           setError({
@@ -215,6 +224,14 @@ export default function AuthPage() {
         break;
       case "login-password":
         try {
+          if (!password) {
+            setError({
+              field: "password",
+              type: "scary",
+              message: "This field is required",
+            });
+            return;
+          }
           const res = await login({ email, password });
           if (res.user.step === "dashboard") navigate("/dashboard");
           else {
@@ -266,10 +283,28 @@ export default function AuthPage() {
         break;
       case "set-new-password":
         try {
+          if (!password) {
+            setError({
+              message: "This field is required",
+              type: "super-scary",
+              field: "password",
+            });
+            if (confirmPassword) return;
+          }
+          if (!confirmPassword) {
+            setConfirmPasswordError({
+              message: "This field is required",
+              type: "super-scary",
+            });
+            return;
+          }
+
           if (error.field === "password" || confirmPasswordError.message)
             return;
           await resetPassword({ token: resetToken, newPassword: password });
           setStep("password-reset-successful");
+          setPassword("")
+          setConfirmPassword("")
         } catch (error) {
           setError({
             field: "password",
@@ -277,8 +312,6 @@ export default function AuthPage() {
             type: "scary",
           });
         } finally {
-          setPassword("");
-          setConfirmPassword("");
           setLoading(false);
         }
 
@@ -353,7 +386,8 @@ export default function AuthPage() {
 
     // proceed to onboarding after correct code
   };
-  return (
+
+ return (
     <>
       <Header />
 
@@ -421,7 +455,7 @@ export default function AuthPage() {
                           <img
                             src={FiX}
                             alt="Clear"
-                            className="w-4 h-4 object-contain"
+                            className="w-[15px] object-contain"
                           />
                         </button>
                       )}
@@ -446,7 +480,7 @@ export default function AuthPage() {
                         </div>
                       ) : (
                         <p className="text-[12px] font-medium text-left text-[#91918E] leading-[15px] mb-[6px]">
-                          We've sent a temporary sign-up code to your inbox Please
+                          We've sent a temporary sign-up code to your inbox <br />Please
                           enter it below
                         </p>
                       )}
@@ -498,8 +532,9 @@ export default function AuthPage() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className={`w-[350px] outline-none placeholder:text-[14px] placeholder:font-medium placeholder:text-[#B3B2B0] px-2 py-[8px] border-[1px]  h-[36px] rounded-[8px] text-sm pr-9
-  ${error?.field === "password" && error?.type === "scary"
-                            ? "border-[1px] border-[#F1511B] shadow-[0_0_0_4px_rgba(173,150,105,0.2)] text-[#F1511B]"
+  ${error?.field === "password" &&
+                            (error?.type === "scary" || error.type === "super-scary")
+                            ? `border-[1px] border-[#F1511B] ${error.type === "super-scary" ? "shadow-[0_0_0_4px_rgba(241,81,27,0.2)]" : "shadow-[0_0_0_4px_rgba(173,150,105,0.2)]"} text-[#F1511B]`
                             : error.field === "password" && error.type === "light"
                               ? "border-[1px] border-[#AD9669] shadow-[0_0_0_4px_rgba(173,150,105,0.2)]"
                               : " border-[#EBEAE7] text-black"
@@ -515,12 +550,12 @@ export default function AuthPage() {
                       <button
                         onClick={() => setShowPassword(!showPassword)}
                         type="button"
-                        className="absolute right-[9.33px] top-[42px] transform -translate-y-1/2 text-[#4B4B4B]"
+                        className="absolute right-[8px] top-[42px] transform -translate-y-1/2 text-[#4B4B4B]"
                       >
                         {showPassword ? (
-                          <img src={eyeClose} className="w-[13.34px]" />
+                          <img src={eyeClose} className="w-[14.75px]" />
                         ) : (
-                          <img src={eye} className="w-[13.34px]" />
+                          <img src={eye} className="w-[14.75px]" />
                         )}
                       </button>
                     </div>
@@ -539,8 +574,10 @@ export default function AuthPage() {
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
                           className={`w-[350px] outline-none placeholder:text-[14px] placeholder:font-medium placeholder:text-[#B3B2B0] px-2 border-[1px]  py-[6px] h-[36px] rounded-[8px] text-sm pr-9
-  ${confirmPasswordError?.message && confirmPasswordError?.type === "scary"
-                              ? "border-[1px] border-[#F1511B] shadow-[0_0_0_4px_rgba(173,150,105,0.2)] text-[#F1511B]"
+  ${confirmPasswordError?.message &&
+                              (confirmPasswordError?.type === "scary" ||
+                                confirmPasswordError.type === "super-scary")
+                              ? `border-[1px] border-[#F1511B] ${confirmPasswordError.type === "super-scary" ? "shadow-[0_0_0_4px_rgba(241,81,27,0.2)]" : "shadow-[0_0_0_4px_rgba(173,150,105,0.2)]"} text-[#F1511B]`
                               : confirmPasswordError?.type === "light"
                                 ? "border-[1px] border-[#AD9669] shadow-[0_0_0_4px_rgba(173,150,105,0.2)]"
                                 : " border-[#EBEAE7] text-black"
@@ -558,12 +595,12 @@ export default function AuthPage() {
                             setShowConfirmPassword(!showConfirmPassword)
                           }
                           type="button"
-                          className="absolute right-[9.33px] top-[42px] transform -translate-y-1/2 text-[#4B4B4B]"
+                          className="absolute right-[8px] top-[42px] transform -translate-y-1/2 text-[#4B4B4B]"
                         >
                           {showConfirmPassword ? (
-                            <img src={eyeClose} className="w-[13.34px]" />
+                            <img src={eyeClose} className="w-[14.75px]" />
                           ) : (
-                            <img src={eye} className="w-[13.34px]" />
+                            <img src={eye} className="w-[14.75px]" />
                           )}
                         </button>
                       </div>
@@ -573,7 +610,12 @@ export default function AuthPage() {
                 <div className="flex flex-col gap-[10px] mt-1">
                   <button
                     disabled={
-                      loading || error.message || confirmPasswordError.message
+                      loading ||
+                      (error.type !== "" &&
+                        (error.type !== "super-scary" ||
+                          confirmPasswordError.type !== "super-scary") &&
+                        (error.message && error.message !==
+                        "Enter at least 8 characters for security"))
                     }
                     onClick={handleEmailSubmit}
                     className="w-[350px] h-[36px] bg-[#888870] relative flex justify-center items-center gap-[4px]   font-[450] p-[10px] rounded-[8px]  text-[14px] leading-[100%]"
@@ -608,11 +650,9 @@ export default function AuthPage() {
                 {step === "login-password" && (
                   <button
                     onClick={async () => {
-                      setLoading(true);
+                      setStep("verify-forgot-otp");
                       setCode("");
                       await handleResendOtp();
-                      setStep("verify-forgot-otp");
-                      setLoading(false);
                     }}
                     className="text-xs mt-[4px] font-medium text-[#91918E] underline text-center"
                   >
@@ -650,16 +690,9 @@ export default function AuthPage() {
                 Continue with Microsoft Account
               </button>
 
-              <button
-                onClick={loginApple}
-                className="w-full h-[36px] px-4 flex items-center justify-start gap-[12px] border border-[#E4E4E4] rounded-[8px] bg-white text-[14px] leading-[100%] font-medium"
-              >
-                <img src={Apple} alt="Apple" className="w-[18px] h-[18px]" />
-                Continue with Apple
-              </button>
-            </div>
-            {step === "verify-forgot-otp" ||
-              (step === "set-new-password" && (
+           </div>
+            {(step === "verify-forgot-otp" ||
+              step === "set-new-password" || step === "verify-login-otp") && (
                 <button
                   onClick={() => {
                     setError({ message: "", field: "", type: "" });
@@ -672,7 +705,7 @@ export default function AuthPage() {
                   {" "}
                   Go to log in
                 </button>
-              ))}
+              )}
           </div>
         )}
       </div>

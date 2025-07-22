@@ -27,7 +27,7 @@ export default function Header() {
                     className="flex font-inter text-[#91918E]  font-medium items-center gap-[8.2px] cursor-pointer text-sm "
                 >
                 <img src={globe} className="w-[15.42px] pt-[.5px]" alt="" />
-                    {language+ " (US)"}
+                    {language+ (language === "English"?" (US)":" (AR)")}
                     {open ? <FiChevronUp className="text-base" /> : <FiChevronDown className="text-base" />}
                 </button>
 
@@ -38,17 +38,17 @@ export default function Header() {
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
                             transition={{ duration: 0.15 }}
-                            className="absolute right-0 mt-2 w-28 bg-white border border-gray-200 rounded-md shadow-md z-50 origin-top-right"
+                            className="absolute right-0 mt-2 p-1 w-28 bg-white border text-[#32302C] border-gray-200 rounded-md  z-50 origin-top-right"
                         >
                             <button
                                 onClick={() => handleSelect("English")}
-                                className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                                className="block w-full text-[14px] font-medium px-4 py-[4px] rounded text-left hover:bg-[#37352F0F]"
                             >
                                 English
                             </button>
                             <button
                                 onClick={() => handleSelect("Arabic")}
-                                className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                                className="block w-full text-[14px] font-medium px-4 py-[4px] rounded text-left hover:bg-gray-100"
                             >
                                 Arabic
                             </button>

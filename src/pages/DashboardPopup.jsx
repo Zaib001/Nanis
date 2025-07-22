@@ -29,7 +29,7 @@ const DashboardPopup = ({setShowPopup}) => {
               You’re in! Prompt it to <br />
               done with Nanis AI
             </h1>
-            <p className="text-[#636361] text-[14px] leading-[20px] font-normal">
+            <p className="text-[#636361] text-[14px] leading-[20px] font-[350]">
               Start with an idea, question, or draft Nanis helps
               <br /> you turn it into a finished document in seconds.
             </p>

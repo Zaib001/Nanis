@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { updateUserProfile, uploadProfilePic } from "../services/api";
 import { FaCheckCircle } from "react-icons/fa";
 import Header from "../components/Header";
@@ -49,6 +49,9 @@ export default function OnboardingFlow() {
   const [success, setSuccess] = useState(false);
   const { setUser } = useAuth();
   const navigate = useNavigate();
+
+  const [params, setParams] = useSearchParams();
+  const provider = params.get("provider");
 
   useEffect(() => {
     if (fullName) setNError("");
@@ -107,17 +110,11 @@ export default function OnboardingFlow() {
   };
 
   const handleSubmit = async () => {
-    if (!fullName && !password) {
-      setNError("This field is required");
+   if (!password && provider === "local") {
       setPError({ message: "This field is required", type: "scary" });
       return;
     }
-
-    if (!password) {
-      setPError({ message: "This field is required", type: "scary" });
-      return;
-    }
-    if (password.length < 8) {
+    if (password.length < 8 && !provider) {
       return;
     }
     if (!fullName) {
@@ -131,11 +128,13 @@ export default function OnboardingFlow() {
       });
       setUser(null);
       setSuccess(true);
-      setTimeout(() => navigate("/dashboard"), 5000);
+      setTimeout(() => navigate("/dashboard"), 3000);
     } catch (error) {
       toast.error(error.message || "Could not enter data");
     }
   };
+
+  console.log(provider);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FAFAF9] font-inter px-4">
@@ -182,15 +181,11 @@ export default function OnboardingFlow() {
                 />
                 <label className="cursor-pointer" htmlFor="profile-upload">
                   {" "}
-                  <span className="text-xs text-[#91918E] flex gap-1 font-semibold items-center">
+                  <span className="text-xs text-[#91918E] flex gap-1 font-medium items-center">
                     <span>
-                      <img
-                        src={addPhoto}
-                        className="w-[12px] h-[12px]"
-                        alt=""
-                      />
+                      <img src={addPhoto} className="w-[14px] " alt="" />
                     </span>
-                    Add a profile
+                    Add a photo
                   </span>
                 </label>
               </div>
@@ -218,46 +213,47 @@ export default function OnboardingFlow() {
                 )}
               </div>
 
-              <div className="w-full relative">
-                <label className="block text-[12px] leading-[12px] text-left font-medium text-[#91918E] mb-[6px]">
-                  Set a secure password
-                </label>
+              {provider === "local" && (
+                <div className="w-full relative">
+                  <label className="block text-[12px] leading-[12px] text-left font-medium text-[#91918E] mb-[6px]">
+                    Set a secure password
+                  </label>
 
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="New password"
-                  className={`w-full h-[36px]   rounded-[8px] px-[8px] py-[6px] text-sm pr-10 focus:outline-none
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="New password"
+                    className={`w-full h-[36px]   rounded-[8px] px-[8px] py-[6px] text-sm pr-10 focus:outline-none
   ${pError.type === "scary"
-                      ? "border-[1.5px] border-[#F1511B] shadow-[0_0_0_4px_rgba(173,150,105,0.2)] text-[#F1511B]"
-                      : pError.type === "light"
-                        ? "border-[1.5px] border-[#AD9669] shadow-[0_0_0_4px_rgba(173,150,105,0.2)]"
-                        : "  border-[1px] border-[#EBEAE7]"
-                    }
+                        ? "border-[1.5px] border-[#F1511B] shadow-[0_0_0_4px_rgba(173,150,105,0.2)] text-[#F1511B]"
+                        : pError.type === "light"
+                          ? "border-[1.5px] border-[#AD9669] shadow-[0_0_0_4px_rgba(173,150,105,0.2)]"
+                          : "  border-[1px] border-[#EBEAE7]"
+                      }
 `}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
 
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-[9.33px] top-[36px] transform -translate-y-1/2 text-[#91918E]"
-                >
-                  {showPassword ? (
-                    <img src={eyeClose} width={13.34} />
-                  ) : (
-                    <img src={eye} width={13.34} />
-                  )}
-                </button>
-                {pError.message && (
-                  <p
-                    className={`text-[12px] font-medium text-left  mt-1 ${pError.type === "light" ? "text-[#91918E]" : "text-[#F1511B]"}`}
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-[9.33px] top-[36px] transform -translate-y-1/2 text-[#91918E]"
                   >
-                    {pError.message}
-                  </p>
-                )}
-              </div>
-
+                    {showPassword ? (
+                      <img src={eyeClose} width={13.34} />
+                    ) : (
+                      <img src={eye} width={13.34} />
+                    )}
+                  </button>
+                  {pError.message && (
+                    <p
+                      className={`text-[12px] font-medium text-left  mt-1 ${pError.type === "light" ? "text-[#91918E]" : "text-[#F1511B]"}`}
+                    >
+                      {pError.message}
+                    </p>
+                  )}
+                </div>
+              )}
               <button
                 onClick={handleSubmit}
                 className="w-full h-[36px] mt-[10px] bg-[#888870] text-white rounded-md py-2 text-sm font-medium"

@@ -4,15 +4,20 @@ import { ActivitySection } from "./ActivitySection";
 import TasksSection from "./TasksSection";
 import DashboardHeader from "./DashboardHeader";
 import DashboardPopup from "../pages/DashboardPopup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createConversation } from "../services/api";
 import { PromptSection } from "./PromptSection";
 
 export default function DashboardSection() {
   const [prompt, setPrompt] = useState("");
-  const [showPopup, setShowPopup] = useState(true);
+  const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+
+    setTimeout(() => setShowPopup(true),3000)
+},[])
 
   const handleSend = async () => {
     if (!prompt.trim()) return;
