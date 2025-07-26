@@ -57,7 +57,7 @@ export default function DashboardHeader() {
     <div className="w-full flex items-center justify-between font-inter">
       {/* Left Dropdown */}
       <div>
-        <select className="text-sm border border-[#E0E0E0] rounded-full px-3 py-1 text-[#464440] bg-white shadow-sm">
+        <select className="text-xs text-[#73726E] border border-[#37352F29] font-medium leading-[14.4px] rounded-md px-2 bg-transparent py-[6px] ">
           <option>United Arab Emirates Law</option>
           {/* Add more options if needed */}
         </select>
