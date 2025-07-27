@@ -9,10 +9,10 @@ export default function AnswersSection() {
       <div className="w-full max-w-[756px]">
         <CardHeading label="Get answers you can trust" iconSrc={asnwer} />
 
-        <div className="w-full h-[280.13px] bg-white rounded-[16px] shadow-[0px_12px_32px_0px_rgba(0,0,0,0.05)] border border-[#0000000D] flex font-inter">
+        <div className="w-full h-[280.13px] bg-transparent rounded-[16px] shadow-[0px_12px_32px_0px_rgba(0,0,0,0.05)] border border-[#54483114] flex font-inter">
           <span></span>
           {/* Left Side - Text with right divider */}
-          <div className="w-1/2 flex flex-col justify-center px-6 border-r border-[#E5E5E5]">
+          <div className="w-1/2 flex flex-col justify-center px-6 border-r border-[#54483114]">
             <div className="flex gap-3 mb-2 px-2 pt-1">
               <img src={all} alt="Google Meet" />
             </div>
@@ -33,8 +33,8 @@ export default function AnswersSection() {
           </div>
 
           {/* Right Side - Faces */}
-          <div className="w-[882px] h-[240px] mt-7 relative flex items-center justify-center">
-            <img src={main} alt="Meeting Visual" className="w-[100%]" />
+          <div className="w-1/2  mt-1 relative flex items-center justify-center pb-3">
+            <img src={main} alt="Meeting Visual" className="w-[100%] h-[110%]" />
           </div>
         </div>
       </div>

@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { FiClock, FiMoreHorizontal, FiFileText, FiChevronRight } from "react-icons/fi";
+import { LuEye } from "react-icons/lu";
+import { GrHomeRounded } from "react-icons/gr";
+import { RxCounterClockwiseClock } from "react-icons/rx";
 
 export default function DashboardHeader() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -84,7 +87,7 @@ export default function DashboardHeader() {
                 {/* Change default start page dropdown item */}
                 <div
                   onClick={handleInnerDropdownToggle} // Trigger inner dropdown toggle on click
-                  className="flex items-center gap-2 text-sm text-[#464440] font-medium hover:bg-[#F8F8F7] p-[5px_10px] rounded-[6px] cursor-pointer"
+                  className="flex items-center gap-2 text-sm text-[#5F5E5B] font-medium hover:bg-[#F8F8F7] p-[5px_10px] rounded-[6px] cursor-pointer"
                 >
                   <FiFileText className="w-4 h-4 text-[#464440]" />
                   <span>Change default start page</span>
@@ -95,15 +98,15 @@ export default function DashboardHeader() {
                 {isInnerDropdownOpen && (
                   <div className="absolute top-[4px] -left-[230px] w-[224px] h-[120px] rounded-[8px] border border-[#E7E6E4] shadow-[0px_12px_32px_0px_#00000008] p-[6px] gap-[6px] bg-white">
                     <div className="flex flex-col gap-[8px]">
-                      <div className="flex items-center gap-[8px] text-sm text-[#464440] font-medium hover:bg-[#F8F8F7] p-[5px_10px] rounded-[6px]">
-                        <FiFileText className="w-4 h-4 text-[#464440]" />
+                      <div className="flex items-center gap-[8px] text-sm text-[#5F5E5B] font-medium hover:bg-[#F8F8F7] p-[5px_10px] rounded-[6px]">
+                        <GrHomeRounded className="w-4 h-4 text-[#464440]" />
                         <span>Home</span>
                       </div>
-                      <div className="flex items-center gap-[8px] text-sm text-[#464440] font-medium hover:bg-[#F8F8F7] p-[5px_10px] rounded-[6px]">
-                        <FiFileText className="w-4 h-4 text-[#464440]" />
+                      <div className="flex items-center gap-[8px] text-sm text-[#5F5E5B] font-medium hover:bg-[#F8F8F7] p-[5px_10px] rounded-[6px]">
+                        <RxCounterClockwiseClock className="w-4 h-4 text-[#464440]" />
                         <span>Last visited page</span>
                       </div>
-                      <div className="flex items-center gap-[8px] text-sm text-[#464440] font-medium hover:bg-[#F8F8F7] p-[5px_10px] rounded-[6px]">
+                      <div className="flex items-center gap-[8px] text-sm text-[#5F5E5B] font-medium hover:bg-[#F8F8F7] p-[5px_10px] rounded-[6px]">
                         <FiFileText className="w-4 h-4 text-[#464440]" />
                         <span>Top page in sidebar</span>
                       </div>
@@ -114,9 +117,9 @@ export default function DashboardHeader() {
                 {/* Show/hide widgets dropdown item */}
                 <div
                   onClick={handleWidgetsDropdownToggle}
-                  className="flex items-center gap-2 text-sm text-[#464440] font-medium hover:bg-[#F8F8F7] p-[5px_10px] rounded-[6px] cursor-pointer"
+                  className="flex items-center gap-2 text-sm text-[#5F5E5B] font-medium hover:bg-[#F8F8F7] p-[5px_10px] rounded-[6px] cursor-pointer"
                 >
-                  <FiFileText className="w-4 h-4 text-[#464440]" />
+                  <LuEye className="w-4 h-4 text-[#464440]" />
                   <span>Show/hide widgets</span>
                   <FiChevronRight className="ml-auto w-4 h-4 text-[#464440]" />
                 </div>
@@ -125,20 +128,16 @@ export default function DashboardHeader() {
                 {isWidgetsDropdownOpen && (
                   <div className="absolute top-[40px] -left-[230px] w-[224px] h-[160px] rounded-[8px] border border-[#E7E6E4] shadow-[0px_12px_32px_0px_#00000008] p-[6px] gap-[6px] bg-white">
                     <div className="flex flex-col gap-[8px]">
-                      <div className="flex items-center gap-[8px] text-sm text-[#464440] font-medium hover:bg-[#F8F8F7] p-[5px_10px] rounded-[6px]">
-                        <FiFileText className="w-4 h-4 text-[#464440]" />
+                      <div className="flex items-center gap-[8px] text-sm text-[#5F5E5B] font-medium hover:bg-[#F8F8F7] p-[5px_10px] rounded-[6px]">
                         <span>Greeting</span>
                       </div>
-                      <div className="flex items-center gap-[8px] text-sm text-[#464440] font-medium hover:bg-[#F8F8F7] p-[5px_10px] rounded-[6px]">
-                        <FiFileText className="w-4 h-4 text-[#464440]" />
+                      <div className="flex items-center gap-[8px] text-sm text-[#5F5E5B] font-medium hover:bg-[#F8F8F7] p-[5px_10px] rounded-[6px]">
                         <span>Upcoming events</span>
                       </div>
-                      <div className="flex items-center gap-[8px] text-sm text-[#464440] font-medium hover:bg-[#F8F8F7] p-[5px_10px] rounded-[6px]">
-                        <FiFileText className="w-4 h-4 text-[#464440]" />
+                      <div className="flex items-center gap-[8px] text-sm text-[#5F5E5B] font-medium hover:bg-[#F8F8F7] p-[5px_10px] rounded-[6px]">
                         <span>My tasks</span>
                       </div>
-                      <div className="flex items-center gap-[8px] text-sm text-[#464440] font-medium hover:bg-[#F8F8F7] p-[5px_10px] rounded-[6px]">
-                        <FiFileText className="w-4 h-4 text-[#464440]" />
+                      <div className="flex items-center gap-[8px] text-sm text-[#5F5E5B] font-medium hover:bg-[#F8F8F7] p-[5px_10px] rounded-[6px]">
                         <span>Database views</span>
                       </div>
                     </div>
