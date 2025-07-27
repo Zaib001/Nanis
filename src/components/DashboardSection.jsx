@@ -31,7 +31,7 @@ export default function DashboardSection() {
     <>
       <DashboardHeader />
       <div className="w-full px-4 sm:px-[50px] flex flex-col gap-[50px] mt-[50px] items-center justify-center">
-        <div className="w-full max-w-[1229px] flex flex-col gap-[32px] mx-auto">
+        <div className="w-full max-w-[1229px] flex flex-col  mx-auto">
           <PromptSection
             prompt={prompt}
             setPrompt={setPrompt}
