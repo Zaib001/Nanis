@@ -42,7 +42,7 @@ export function PromptSection({
           className="w-full h-[132px] bg-white rounded-[12px] px-4 py-3 flex flex-col justify-between"
           style={{
             boxShadow:
-              "0px 12px 32px rgba(0, 0, 0, 0.08)",
+              "0px 0px 0px 1px rgba(0, 0, 0, 0.05)",
           }}
         >
           {/* Top Row - Input Prompt */}
