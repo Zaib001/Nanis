@@ -20,10 +20,16 @@ export function PromptSection({
 }) {
   const { user } = useAuth();
   const [showLoadPrompt, setShowLoadPrompt] = useState(true);
+  const [isResearchMode, setIsResearchMode] = useState(false);
+
   useEffect(() => {
     if (prompt === "") setShowLoadPrompt(true);
     else setShowLoadPrompt(false);
   }, [prompt]);
+
+  const toggleMode = () => {
+    setIsResearchMode(!isResearchMode);
+  };
 
   return (
     <div className="w-full px-4 sm:px-[50px] flex justify-center items-center">
@@ -82,9 +88,27 @@ export function PromptSection({
           {/* Bottom Row - Controls */}
           <div className="flex justify-between items-center text-sm text-[#6C6C6C]">
             <div className="flex items-center gap-[6px]">
-              <div className="flex items-center bg-[#0000000A] rounded-lg text-sm font-medium relative ">
-                <AskDropdown />
-                <div className="px-[9px] py-1 text-[#A0A0A0]">Research</div>
+              {/* Toggle between Ask and Research */}
+              <div className="flex items-center pr-[2px] bg-[#0000000A] rounded-lg text-sm font-medium relative overflow-hidden">
+                <div
+                  className={`absolute inset-0  bg-white transition-all duration-300 ${isResearchMode ? 'translate-x-full' : 'translate-x-full'}`}
+                  style={{ zIndex: 0 }}
+                />
+                {isResearchMode ? <div
+                  onClick={toggleMode}
+                  className={`relative z-10 px-[9px] font-normal text-[14px] py-1 cursor-pointer transition-colors duration-300 ${isResearchMode ? 'text-[#32302C]' : 'text-[#32302C] bg-white border-r border-[#0000000A] rounded-l-lg'}`}
+                >
+                  Ask
+                </div> : <div className="relative z-10 flex items-center">
+                  <AskDropdown />
+                </div>
+                }
+                <div
+                  onClick={toggleMode}
+                  className={`relative z-10 px-[9px] pt-[2px] pb-[2px] cursor-pointer transition-colors duration-300 ${isResearchMode ? 'text-[#32302C] bg-white rounded-r-lg' : 'text-[#32302C8A] bg-transparent'}`}
+                >
+                  Research
+                </div>
               </div>
 
               <div className="flex items-center px-[8px] py-[4px] gap-1 text-[14px] font-semibold text-[#73726E]">
