@@ -5,6 +5,7 @@ import googleIcon from "../assets/google.svg"; // replace with actual image
 import notionIcon from "../assets/notion.svg";
 import slackIcon from "../assets/slack.svg";
 import { FiSearch, FiCheck, FiPlus } from "react-icons/fi";
+import { useLocation } from "react-router-dom";
 
 const sources = [
     {
@@ -28,6 +29,7 @@ const sources = [
 export default function AllSourcesDropdown() {
     const [isOpen, setIsOpen] = useState(false);
     const [selected, setSelected] = useState(null);
+    const {pathname} = useLocation()
 
     const toggleDropdown = () => setIsOpen((prev) => !prev);
     const handleSelect = (id) => {
@@ -49,8 +51,8 @@ export default function AllSourcesDropdown() {
 
             {/* Dropdown */}
             {isOpen && (
-                <div className="absolute -left-[183px] z-50 bg-white shadow-[0px_12px_32px_rgba(0,0,0,0.05),_0px_0px_0px_1px_rgba(0,0,0,0.08)] 
-              rounded-[8px] border-[1px] border-[#E7E6E4] w-[294px] p-[6px] mt-2">
+                <div className={`absolute -left-[183px] z-50 ${pathname.includes("chat") && "bottom-[2rem]"} bg-white shadow-lg 
+              rounded-[8px] border-[1px] border-[#E7E6E4] w-[294px] p-[6px] mt-2`}>
 
                     {/* Search bar */}
                     <div

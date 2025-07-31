@@ -13,6 +13,8 @@ const request = async (endpoint, method = "GET", data = null) => {
       body: data ? JSON.stringify(data) : undefined,
     });
 
+    console.log({ res });
+
     if (!res.ok) {
       const error = await res.json();
       throw new Error(error.msg || "Something went wrong");
@@ -21,6 +23,26 @@ const request = async (endpoint, method = "GET", data = null) => {
     return await res.json();
   } catch (err) {
     throw err;
+  }
+};
+
+export const testSetCookie = async () => {
+  try {
+    const response = await request("/api/test-cookie");
+    console.log("Cookie set response:", response);
+    console.log("Check your browser cookies - should see testCookie");
+  } catch (error) {
+    console.error("Error setting cookie:", error);
+  }
+};
+
+// Test reading cookies
+export const testCheckCookie = async () => {
+  try {
+    const response = await request("/api/check-cookie");
+    console.log("Cookie check response:", response);
+  } catch (error) {
+    console.error("Error checking cookie:", error);
   }
 };
 
@@ -43,7 +65,8 @@ export const verifySignupOtp = (payload) =>
   request("/auth/verify-otp", "POST", payload);
 export const resendOtp = (payload) =>
   request("/auth/resend-otp", "POST", payload);
-export const verifyForgotPasswordOtp = (payload) => request("/auth/verify-otp-forgot-password","POST",payload);
+export const verifyForgotPasswordOtp = (payload) =>
+  request("/auth/verify-otp-forgot-password", "POST", payload);
 
 export const updateUserProfile = (payload) =>
   request("/user/update", "POST", payload);
@@ -52,13 +75,12 @@ export const uploadProfilePic = (payload) =>
   request("/user/upload-picture", "POST", payload);
 
 //conversation
-export const createConversation = (payload) => request("/conversation", "POST");
+export const createConversation = (payload) => request("/conversation", "POST",payload);
 export const getConversationMessages = (id) =>
   fetch(`${import.meta.env.VITE_API_BASE_URL}/conversation/messages/${id}`, {
     method: "GET",
     credentials: "include",
   });
-
 export const generateResponse = (payload) =>
   fetch(`${import.meta.env.VITE_API_BASE_URL}/conversation/generate`, {
     method: "POST",
@@ -66,3 +88,9 @@ export const generateResponse = (payload) =>
     credentials: "include",
     body: JSON.stringify(payload),
   });
+
+export const getAllPrompts = () => request("/prompt");
+export const getAllAgents = () => request("/agent");
+export const getConversationHistory = () => request("/conversation/history");
+export const deleteConversation = (id) =>
+  request(`/conversation/${id}`, "DELETE");
