@@ -1,24 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiSearch, FiPlus } from "react-icons/fi";
-import {
-  FaChevronDown,
-  FaEdit,
-  FaChevronUp,
-  FaFileContract,
-  FaParagraph,
-  FaTasks,
-  FaBell,
-} from "react-icons/fa";
+import { FiPlus } from "react-icons/fi";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import search from "../assets/vuesax/bulk/search-normal.svg";
 import document from "../assets/vuesax/bulk/vuesax/bulk/document-text.svg";
-import documentfav from "../assets/vuesax/bulk/vuesax/bulk/document-favorite.svg";
 import updates from "../assets/vuesax/bulk/messages-2.svg";
-import Calendar from "../assets/vuesax/bulk/calendar.svg";
 import trend from "../assets/vuesax/bulk/trend-up.svg";
 import template from "../assets/vuesax/bulk/vuesax/bulk/book-square.svg";
+import trash from "../assets/Trash.svg";
 import arrow from "../assets/u_left-arrow-from-left.svg";
-import add from "../assets/add.svg";
+import taskSquare from "../assets/task-square.svg";
+import bookK from "../assets/book-k.svg";
 import set from "../assets/change.svg";
 import book from "../assets/book.svg";
 import pen from "../assets/Frame 15.svg";
@@ -36,18 +28,23 @@ import sms from "../assets/sms.svg";
 import translate from "../assets/translate.svg";
 import calendar from "../assets/calendar.svg";
 import copy from "../assets/document-copy.svg";
-import task from "../assets/Frame 2043684104.svg";
 import folder from "../assets/vuesax/bulk/folder-cloud.svg";
 import searchGlass from "../assets/search-glass.svg";
-import { useNavigate } from "react-router-dom";
-import { FiSettings, FiUserPlus } from "react-icons/fi";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import ChatHistoryPanel from "./ChatHistoryPanel";
 import setting from "../assets/setting.svg";
 import invite from "../assets/Invite Member Small.svg";
 import { useAuth } from "../providers/AuthProvider";
+import { deleteConversation, getConversationHistory } from "../services/api";
+import {
+  formatDistanceToNow,
+  isToday,
+  isYesterday,
+  isThisWeek,
+} from "date-fns";
+
 const SectionHeader = ({ title }) => (
-  <div className="font-inter text-xs w-full h-[30px] px-2 font-normal text-[#91918E] flex items-center">
+  <div className="font-inter text-xs w-full h-[30px] px-2 font-medium text-[#91918E] flex items-center">
     {title}
   </div>
 );
@@ -82,7 +79,7 @@ const SidebarItem = ({ icon: Icon, imgSrc, label, muted = false, onClick }) => {
       ) : (
         <Icon className="w-[18px] h-[18px]" />
       )}
-      <span className="truncate font-inter text-[#91918E] font-normal leading-[20px] tracking-[-0.04em]">
+      <span className="truncate font-inter text-[#5F5E5B] font-medium leading-[20px] tracking-[-0.04em]">
         {label}
       </span>
     </div>
@@ -95,18 +92,92 @@ export default function Sidebar() {
   const [showArrowIcon, setShowArrowIcon] = useState(false);
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
   const [showChatHistory, setShowChatHistory] = useState(false);
+  const [chatHistory, setChatHistory] = useState([]);
   const { user } = useAuth();
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
   console.log({ user });
+
+  console.log({ chatHistory });
+
+  const fetchData = async () => {
+    const { conversations } = await getConversationHistory();
+    setChatHistory(conversations);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [pathname]);
+
+  function groupChatsByDate(chats) {
+    const today = [];
+    const yesterday = [];
+    const pastWeek = [];
+    if (chats.length === 0) return { today, yesterday, pastWeek };
+
+    for (const chat of chats) {
+      const date = new Date(chat.createdAt);
+
+      if (isToday(date)) {
+        today.push(chat);
+      } else if (isYesterday(date)) {
+        yesterday.push(chat);
+      } else if (isThisWeek(date)) {
+        pastWeek.push(chat);
+      }
+    }
+
+    return { today, yesterday, pastWeek };
+  }
+
+  const { today, yesterday, pastWeek } = groupChatsByDate(chatHistory);
+
+  const ChatItem = ({ history }) => (
+    <div
+      onClick={() => navigate(`/chat/${history.id}`)}
+      className="px-[10px] cursor-pointer py-[6px] rounded-lg items-center hover:bg-[#F3F3F3] flex"
+    >
+      <img
+        src={review}
+        alt="icon"
+        className="object-contain w-[18px] h-[18px] mr-[10px]"
+      />
+      <div>
+        <p className="text-[13px] text-[#5F5E5B] font-medium leading-[100%]">
+          {history.name}
+        </p>
+        <p className="text-[12px] mt-[4px] text-[#ACABA9] font-medium leading-[100%]">
+          {formatDistanceToNow(new Date(history.createdAt), {
+            addSuffix: true,
+          })}
+        </p>
+      </div>
+      <img
+        src={trash}
+        alt="icon"
+        className="object-contain w-[18px] cursor-pointer h-[18px] ml-auto"
+        onClick={async (e) => {
+          e.stopPropagation();
+          if(pathname === `/chat/${history.id}`)
+            navigate("/dashboard")
+          await deleteConversation(history.id);
+          await fetchData();
+        }}
+      />
+    </div>
+  );
 
   return (
     <>
       <aside
-  className="w-[211px] h-screen fixed scrollbar-hide md:relative z-40 bg-[#F8F8F7] border-r border-[#54483114] pt-[10px] px-2 pb-2 flex flex-col text-sm overflow-hidden" // Added overflow-hidden here
-  onMouseEnter={() => setShowArrowIcon(true)}
-  onMouseLeave={() => setShowArrowIcon(false)}
->
-  <div className="h-full flex overflow-y-auto flex-col scrollbar-hide">          {/* Hide scrollbar in WebKit browsers */}
-         <div className="flex items-center justify-between h-[32px]  px-2 mt-2 relative">
+        className="w-[211px] h-screen fixed scrollbar-hide md:relative z-40 bg-[#F8F8F7] border-r border-[#54483114] pt-[10px] px-2 pb-2 flex flex-col text-sm overflow-hidden" // Added overflow-hidden here
+        onMouseEnter={() => setShowArrowIcon(true)}
+        onMouseLeave={() => setShowArrowIcon(false)}
+      >
+        <div className="h-full flex overflow-y-auto flex-col scrollbar-hide">
+          {" "}
+          {/* Hide scrollbar in WebKit browsers */}
+          <div className="flex items-center justify-between h-[32px]  px-2 mt-2 relative">
             <div
               className="flex items-center gap-2 cursor-pointer relative"
               onClick={() => setShowAccountDropdown(!showAccountDropdown)}
@@ -252,19 +323,16 @@ export default function Sidebar() {
               />
             </div>
           </div>
-
           <div className="flex flex-col gap-[1px] mb-[8px] mt-2">
             <SidebarItem imgSrc={search} label="Search" />
             <SidebarItem imgSrc={home} label="Home" />
             <SidebarItem imgSrc={updates} label="Updates" />
           </div>
-
           <div className="flex flex-col gap-[1px] mb-[8px]">
             <SectionHeader title="Space" />
             <SidebarItem imgSrc={userPlaceholder} label="Sinan’s HQ" />
             <SidebarItem imgSrc={folder} label="Teamspace" muted />
           </div>
-
           <div className="flex flex-col gap-[1px] mb-[8px]">
             <SectionHeader title="Services" />
             <SidebarItem imgSrc={research} label="Legal research" />
@@ -295,12 +363,11 @@ export default function Sidebar() {
               onClick={() => setShowServicesMore(!showServicesMore)}
             />
           </div>
-
           <div className="flex flex-col gap-[1px] mb-[8px]">
             <SectionHeader title="Productivity" />
-            <SidebarItem imgSrc={eSignature} label="eSignature" />
+            <SidebarItem imgSrc={taskSquare} label="Tasks" />
             <SidebarItem imgSrc={updates} label="Chats" />
-            <SidebarItem imgSrc={calendar} label="Calendar" />
+            <SidebarItem imgSrc={eSignature} label="eSignature" />
 
             <AnimatePresence initial={false}>
               {showProductivityMore && (
@@ -310,7 +377,7 @@ export default function Sidebar() {
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                 >
-                  <SidebarItem imgSrc={task} label="Tasks" />
+                  <SidebarItem imgSrc={calendar} label="Calendar" />
                   <SidebarItem imgSrc={book} label="Legal news" />
                 </motion.div>
               )}
@@ -323,18 +390,16 @@ export default function Sidebar() {
               onClick={() => setShowProductivityMore(!showProductivityMore)}
             />
           </div>
-
           <div className="flex flex-col gap-[1px] mb-[8px]">
-            <SectionHeader title="LLM" />
-            <SidebarItem imgSrc={book} label="Knowledge base" />
+            <SectionHeader title="Data controls" />
+            <SidebarItem imgSrc={bookK} label="Knowledge base" />
             <SidebarItem imgSrc={template} label="Templates" />
           </div>
-
           <div className="flex flex-col gap-[1px] mb-[8px]">
             <SectionHeader title="Settings" />
             <SidebarItem imgSrc={set} label="Settings" />
             <SidebarItem imgSrc={trend} label="Usage Insights" />
-            <SidebarItem imgSrc={profile} label="Teams" />
+            <SidebarItem imgSrc={profile} label="Invite members" />
           </div>
         </div>
       </aside>
@@ -359,7 +424,10 @@ export default function Sidebar() {
                   className="w-4 h-4  cursor-pointer rotate-180 hover:opacity-80"
                   onClick={() => setShowChatHistory((prev) => !prev)}
                 />
-                <FiPlus className="w-4 h-4 text-gray-600 cursor-pointer" />
+                <FiPlus
+                  onClick={() => navigate("/dashboard")}
+                  className="w-4 h-4 text-gray-600 cursor-pointer"
+                />
               </div>
             </div>{" "}
             <div className="w-[234px] py-[5px]  flex items-center border-[1px] border-[#EDEDED] rounded-[6px] px-2  gap-2 bg-white">
@@ -374,9 +442,46 @@ export default function Sidebar() {
                 className="flex-1 text-sm mb-[1.5px] text-gray-600 outline-none  bg-transparent font-medium placeholder:text-[#ACABA9]"
               />
             </div>
-            <div className="text-center text-[#73726E] text-[12px] py-2 font-medium mt-[10px] text-xs">
-              No result
-            </div>
+            {chatHistory.length < 1 ? (
+              <div className="text-center text-[#73726E] text-[12px] py-2 font-medium mt-[10px] text-xs">
+                No result
+              </div>
+            ) : (
+              <div className="flex flex-col mt-[10px] gap-[10px]">
+                {today.length > 0 && (
+                  <>
+                    <p className="text-[12px] font-semibold text-[#73726E] px-[10px]">
+                      Today
+                    </p>
+                    {today.map((history) => (
+                      <ChatItem key={history.id} history={history} />
+                    ))}
+                  </>
+                )}
+
+                {yesterday.length > 0 && (
+                  <>
+                    <p className="text-[12px] font-semibold text-[#73726E] px-[10px]">
+                      Yesterday
+                    </p>
+                    {yesterday.map((history) => (
+                      <ChatItem key={history.id} history={history} />
+                    ))}
+                  </>
+                )}
+
+                {pastWeek.length > 0 && (
+                  <>
+                    <p className="text-[12px] font-semibold text-[#73726E] px-[10px]">
+                      Past Week
+                    </p>
+                    {pastWeek.map((history) => (
+                      <ChatItem key={history.id} history={history} />
+                    ))}
+                  </>
+                )}
+              </div>
+            )}
           </motion.div>
         </AnimatePresence>
       )}

@@ -62,7 +62,8 @@ export default function AskDropdown() {
   }, []);
 
   return (
-    <div className="relative" ref={dropdownRef}>
+<>
+    <div className="relative z-10" ref={dropdownRef}>
       {/* Trigger */}
       <div
         onClick={toggleDropdown}
@@ -76,11 +77,12 @@ export default function AskDropdown() {
         </div>
       </div>
 
+   </div>
       {/* Dropdown */}
       {isOpen && (
         <div
           className="absolute top-full left-0 z-50 w-[294px] bg-white rounded-[8px] border border-[#E7E6E4] 
-shadow-[0px_12px_32px_0px_rgba(0,0,0,0.05),_0px_0px_0px_1px_rgba(0,0,0,0.08)] p-[6px] mt-2"
+shadow-lg p-[6px] mt-2"
         >
           <div
             className="text-[12px] font-semibold text-[#464440] px-[10px] py-[4px]"
@@ -129,6 +131,6 @@ shadow-[0px_12px_32px_0px_rgba(0,0,0,0.05),_0px_0px_0px_1px_rgba(0,0,0,0.08)] p-
           ))}
         </div>
       )}
-    </div>
+ </>
   );
 }
